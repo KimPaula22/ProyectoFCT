@@ -5,30 +5,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.proyectofct.Model.Equipo
+import com.example.proyectofct.View.MainScreen
+import com.example.proyectofct.View.QRConDescarga
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavHostController, equipoNombre: String) {
-    // Lista de ejemplo para mostrar los detalles (hasta que tengas una base de datos)
-    val equipos = listOf(
-        Equipo("Ordenador A", "Disponible", "16GB", "Intel i7", "NVIDIA GTX 1060"),
-        Equipo("Ordenador B", "En préstamo", "8GB", "AMD Ryzen 5", "NVIDIA GTX 1650"),
-        Equipo("Ordenador C", "Disponible", "32GB", "Intel i9", "NVIDIA RTX 3080"),
-        Equipo("Ordenador D", "En reparación", "16GB", "AMD Ryzen 7", "NVIDIA RTX 2060"),
-        Equipo("Ordenador E", "Disponible", "16GB", "Intel i5", "AMD Radeon RX 580")
-    )
-
-    val equipo = equipos.firstOrNull { it.nombre == equipoNombre }
+fun DetailScreen(navController: NavHostController, idEquipo: Int, equipos: List<Equipo>) {
+    val equipo = equipos.firstOrNull { it.id == idEquipo }
+    var mostrarQR by remember { mutableStateOf(false) }
 
     if (equipo != null) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Detalles de ${equipo.nombre}") },
+                    title = { Text("Detalles de ${equipo.nombreequipo}") },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -43,7 +41,7 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
                     .padding(innerPadding)
                     .padding(16.dp)
             ) {
-                Text(text = "Nombre: ${equipo.nombre}", style = MaterialTheme.typography.titleLarge)
+                Text(text = "Nombre: ${equipo.nombreequipo}", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "Estado: ${equipo.estado}", style = MaterialTheme.typography.bodyMedium)
                 Spacer(modifier = Modifier.height(8.dp))
@@ -52,6 +50,29 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
                 Text(text = "CPU: ${equipo.cpu}", style = MaterialTheme.typography.bodyLarge)
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = "GPU: ${equipo.gpu}", style = MaterialTheme.typography.bodyLarge)
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "ROM:", style = MaterialTheme.typography.bodyLarge)
+                equipo.rom?.forEach { rom ->
+                    Text(text = "- $rom", style = MaterialTheme.typography.bodyMedium)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = "Dispositivos PCIe:", style = MaterialTheme.typography.bodyLarge)
+                equipo.dispositivos_pcie?.forEach { dispositivo ->
+                    Text(text = "- $dispositivo", style = MaterialTheme.typography.bodyMedium)
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                // Botón para mostrar/ocultar el QR
+                Button(
+                    onClick = { mostrarQR = !mostrarQR },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(if (mostrarQR) "Ocultar QR" else "Ver QR")
+                }
+                if (mostrarQR) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    QRConDescarga(numero = equipo.id.toString())
+                }
             }
         }
     } else {
@@ -76,7 +97,7 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "No se pudo encontrar el equipo con nombre: $equipoNombre",
+                    text = "No se pudo encontrar el equipo con id: $idEquipo",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

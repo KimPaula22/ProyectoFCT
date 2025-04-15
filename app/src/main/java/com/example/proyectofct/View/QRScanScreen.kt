@@ -1,5 +1,6 @@
 package com.example.proyectofct.View
 
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,8 +10,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.proyectofct.Controler.RetrofitClient
+import com.example.proyectofct.Controler.recibirMensajeDeError
+import com.example.proyectofct.DetailScreen
+import com.example.proyectofct.MainActivity
+import com.example.proyectofct.Model.Equipo
+import com.example.proyectofct.Model.Requests.LoginRequest
+import com.example.proyectofct.Model.Responses.EquipoResponse
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanOptions
+import retrofit2.Call
+import retrofit2.Response
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -22,8 +32,41 @@ fun QRScanScreen(navController: NavHostController) {
         // Si el resultado no es nulo, lo guardamos en scanResult
         if (result.contents != null) {
             scanResult = result.contents
-            // Aquí llamamos a la función para que nos diga los detalles del equipo
-            //fetchTeamDetails(scanResult ?: "")
+
+            RetrofitClient.instance.getEquipo(LoginRequest(MainActivity.correo, MainActivity.password), scanResult!!.toInt())
+                .enqueue(object : retrofit2.Callback<EquipoResponse> {
+                    override fun onResponse(
+                        call: Call<EquipoResponse>,
+                        response: Response<EquipoResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val equipo = response.body()?.equipo
+                            //Mandar a detailScreen
+                            if (equipo != null) {
+                                if (!MainActivity.equipos.contains(equipo)) {
+                                    MainActivity.equipos = MainActivity.equipos + equipo
+                                }
+                                navController.navigate("detail_screen/${equipo.id}")
+                            }
+                        } else {
+                            // manejar error de respuesta
+                            if (response.code() == 404) {
+                                Toast.makeText(
+                                    navController.context,
+                                    "No se encontró el equipo",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }
+
+                    override fun onFailure(call: Call<EquipoResponse>, t: Throwable) {
+                        // manejar fallo de conexión
+                        val errorMsg = recibirMensajeDeError(t)
+                        Toast.makeText(navController.context, errorMsg, Toast.LENGTH_SHORT).show()
+                    }
+                })
+
         }
     }
 

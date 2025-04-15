@@ -11,6 +11,18 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import com.example.proyectofct.Controler.RetrofitClient
+import com.example.proyectofct.MainActivity
+import retrofit2.Call
+//Importacion de los requests y responses necesarios para el login
+import com.example.proyectofct.Model.Responses.LoginResponse
+import com.example.proyectofct.Model.Requests.LoginRequest
+import com.example.proyectofct.Controler.recibirMensajeDeError
+
+
+//Usuarios:
+//prueba@gmail.com"    "123456Us"
+//pruebaad@gmail.com"  "123456Ad"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,9 +33,6 @@ fun LoginScreen(navController: NavHostController) {
     var emailError by remember { mutableStateOf("") }  // Mensaje de error para el email
     var passwordError by remember { mutableStateOf("") }  // Mensaje de error para la contraseña
 
-    // Datos de prueba
-    val usuarioPrueba = "usuario@hotmail.com" // usuario
-    val passwordPrueba = "Password123"  // password
 
     // Función para comprobar si el email esta bien
     fun isEmailValid(email: String): Boolean {
@@ -98,26 +107,71 @@ fun LoginScreen(navController: NavHostController) {
             // Botón para iniciar sesión con validación
             Button(
                 onClick = {
-                    // Validar el email y la contraseña
-                    if (email == usuarioPrueba && password == passwordPrueba) {
-                        navController.navigate("main_screen")  // Si todo es válido, navegar a la pantalla principal
-                    } else {
-                        // Si el email no es válido
-                        if (!isEmailValid(email)) {
-                            emailError = "El email debe ser de los dominios permitidos (hotmail.com, gmail.com, hotmail.es)"
-                        }
-                        // Si la contraseña no es válida
-                        if (!isPasswordValid(password)) {
-                            passwordError = "La contraseña debe tener al menos 8 caracteres y una mayúscula"
-                        }
-                        // Si no coinciden los datos con los de prueba
-                        if (email != usuarioPrueba) {
-                            emailError = "Email incorrecto"
-                        }
-                        if (password != passwordPrueba) {
-                            passwordError = "Contraseña incorrecta"
-                        }
+                    // Validaciones locales
+                    if (!isEmailValid(email)) {
+                        emailError = "El email debe ser de los dominios permitidos (hotmail.com, gmail.com, hotmail.es)"
+                        return@Button
                     }
+                    if (!isPasswordValid(password)) {
+                        passwordError = "La contraseña debe tener al menos 8 caracteres y una mayúscula"
+                        return@Button
+                    }
+
+                    // Limpiamos errores anteriores
+                    emailError = ""
+                    passwordError = ""
+
+                    // Preparar login
+                    val loginRequest = LoginRequest(email, password)
+                    var intentos = 0
+
+                    // Función para intentar iniciar sesión
+                    // Si la respuesta es correcta y el mensaje es "Login exitoso", navega a la pantalla principal
+                    // Si la respuesta es incorrecta
+                    // Si el código de error es 401, muestra un mensaje de error "Credenciales incorrectas"
+                    // Si no, muestra un mensaje de error con el código de error
+                    // Si la llamada falla y ya hemos intentado 3 veces, muestra un mensaje de error con el mensaje de error de Retrofit
+                    fun intentarLogin() {
+                        RetrofitClient.instance.login(loginRequest)
+                            .enqueue(object : retrofit2.Callback<LoginResponse> {
+                                override fun onResponse(
+                                    call: Call<LoginResponse>,
+                                    response: retrofit2.Response<LoginResponse>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        val loginResponse = response.body()
+                                        if (loginResponse?.mensaje == "Login exitoso") {
+                                            MainActivity.correo = email
+                                            MainActivity.password = password
+                                            MainActivity.rol = loginResponse.rol
+                                            navController.navigate("main_screen")
+                                        }
+                                    } else {
+                                        val errorCod = response.code()
+                                        if (errorCod == 401) {
+                                            emailError = "Credenciales incorrectas"
+                                            passwordError = "Credenciales incorrectas"
+                                        } else {
+                                            passwordError = "Error en la respuesta del servidor: $errorCod"
+                                        }
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                                    intentos++
+                                    if (intentos < 3) {
+                                        intentarLogin()  // Reintenta
+                                    } else {
+                                        val errorMsg = recibirMensajeDeError(t)
+                                        emailError = errorMsg
+                                        passwordError = errorMsg
+                                    }
+                                }
+                            })
+                    }
+
+                    // Llamamos por primera vez
+                    intentarLogin()
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {

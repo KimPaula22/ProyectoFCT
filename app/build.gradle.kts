@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -74,5 +73,8 @@ dependencies {
     //
     implementation ("androidx.compose.material3:material3:1.0.0-beta01")
 
+    //Retrofit y convertidor JSON
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
 
 }
