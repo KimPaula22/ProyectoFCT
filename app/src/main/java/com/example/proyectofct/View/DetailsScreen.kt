@@ -13,13 +13,12 @@ import com.example.proyectofct.Model.Equipo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(navController: NavHostController, equipoNombre: String) {
-    // Lista de ejemplo para mostrar los detalles (hasta que tengas una base de datos)
     val equipos = listOf(
-        Equipo("Ordenador A", "Disponible", "16GB", "Intel i7", "NVIDIA GTX 1060"),
-        Equipo("Ordenador B", "En préstamo", "8GB", "AMD Ryzen 5", "NVIDIA GTX 1650"),
-        Equipo("Ordenador C", "Disponible", "32GB", "Intel i9", "NVIDIA RTX 3080"),
-        Equipo("Ordenador D", "En reparación", "16GB", "AMD Ryzen 7", "NVIDIA RTX 2060"),
-        Equipo("Ordenador E", "Disponible", "16GB", "Intel i5", "AMD Radeon RX 580")
+        Equipo("Ordenador A", "Disponible", "16GB", "Intel i7", "NVIDIA GTX 1060", "1 DAM"),
+        Equipo("Ordenador B", "En préstamo", "8GB", "AMD Ryzen 5", "NVIDIA GTX 1650", "2 DAM"),
+        Equipo("Ordenador C", "Disponible", "32GB", "Intel i9", "NVIDIA RTX 3080", "1 SMR"),
+        Equipo("Ordenador D", "En reparación", "16GB", "AMD Ryzen 7", "NVIDIA RTX 2060", "AULA VIDEOJUEGOS"),
+        Equipo("Ordenador E", "Disponible", "16GB", "Intel i5", "AMD Radeon RX 580", "DEPARTAMENTO DE INFORMATICA")
     )
 
     val equipo = equipos.firstOrNull { it.nombre == equipoNombre }
@@ -41,21 +40,40 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(text = "Nombre: ${equipo.nombre}", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Estado: ${equipo.estado}", style = MaterialTheme.typography.bodyMedium)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "RAM: ${equipo.ram}", style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "CPU: ${equipo.cpu}", style = MaterialTheme.typography.bodyLarge)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "GPU: ${equipo.gpu}", style = MaterialTheme.typography.bodyLarge)
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(text = "Nombre: ${equipo.nombre}", style = MaterialTheme.typography.titleLarge)
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Estado: ${equipo.estado}", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "Ubicación: ${equipo.ubicacion}", style = MaterialTheme.typography.bodyMedium)
+                        Text(text = "RAM: ${equipo.ram}", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "CPU: ${equipo.cpu}", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "GPU: ${equipo.gpu}", style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Button(
+                    onClick = {
+                        // Aquí puedes implementar la lógica para prestar el equipo
+                    },
+                    enabled = equipo.estado == "Disponible",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Prestar Ordenador")
+                }
             }
         }
     } else {
-        // En caso de que no se encuentre el equipo
         Scaffold(
             topBar = {
                 TopAppBar(
