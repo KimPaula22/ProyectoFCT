@@ -41,7 +41,7 @@ fun RegisterScreen(navController: NavHostController) {
                 onClick = {
                     // Aquí puedes agregar la lógica para registrar al usuario y guardar sus datos en la base de datos
                     // Por ejemplo: registerUser(email, password)
-                    navController.navigate("login_screen") // Redirige al login después de registrarse
+                    navController.navigate("login") // Redirige al login después de registrarse
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
