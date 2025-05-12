@@ -1,10 +1,30 @@
 package com.example.proyectofct.Model
 
+import com.example.proyectofct.Model.componentes.*
+
+//version nueva (refactoriza el nombre de la clase y elimina o comenta al antigua)
+data class EquipoN(
+    var id: Int,
+    var nombre: String,
+    var descripcion: String = "",
+    var fechaRegistro: String = "",
+    var estado: String, //'Disponible','En uso', 'Prestado', 'Averiado','Otro', 'Desconocido'
+    var ubicacion: Ubicacion,
+    var placaBase: PlacaBase,
+    var cpu: Cpu?= null,
+    var gpu: Gpu?= null,
+    var rams: ArrayList<Ram>? = emptyList<Ram>() as ArrayList<Ram>?,
+    var roms: ArrayList<Rom>? = emptyList<Rom>() as ArrayList<Rom>?,
+    var pcis: ArrayList<Pci>? = emptyList<Pci>() as ArrayList<Pci>?,
+    var dispositivosIO: ArrayList<DispositivoIO>? = emptyList<DispositivoIO>() as ArrayList<DispositivoIO>?,
+    )
+
+//version anterior
 data class Equipo(
-    val nombre: String,
-    val estado: String,
-    val ram: String = "",
-    val cpu: String = "",
-    val gpu: String = "",
-    val ubicacion: String
+    var nombre: String,
+    var estado: String,
+    var ram: String = "",
+    var cpu: String = "",
+    var gpu: String = "",
+    var ubicacion: String
 )

@@ -1,65 +1,77 @@
 package com.example.proyectofct
 
+import android.database.sqlite.SQLiteOpenHelper
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.navigation.compose.*
-import com.example.proyectofct.ui.theme.ProyectoFCTTheme
-import com.example.proyectofct.View.*
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.proyectofct.Controler.DatabaseHelper
+import com.example.proyectofct.Controler.TokenDatabaseManager
+import com.example.proyectofct.Controler.llamadas.obtenerEquipos
+import com.example.proyectofct.Controler.llamadas.realizarLogin
 import com.example.proyectofct.Model.Equipo
+import com.example.proyectofct.View.AddEquipoScreen
+import com.example.proyectofct.View.AdminScreen
+import com.example.proyectofct.View.LoginScreen
+import com.example.proyectofct.View.MainScreen
+import com.example.proyectofct.View.ProfileScreen
+import com.example.proyectofct.View.QRScanScreen
+import com.example.proyectofct.View.RegisterScreen
+import com.example.proyectofct.ui.theme.ProyectoFCTTheme
+
 
 class MainActivity : ComponentActivity() {
-    // Definir la lista de equipos
-    private val equipos = mutableListOf<Equipo>()
+
+    companion object {
+        val equipos = mutableListOf<Equipo>()
+        var databaseHelper: DatabaseHelper? = null
+        var tokenDatabaseManager: TokenDatabaseManager? = null
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // ATENCION, TE DA ERRORES DE SQLite DESCOMENTA LA LINEA DE ABAJO Y LO EJECUTAS, DEPUES COMENTALO
+        // applicationContext.deleteDatabase("tokens.db")
+
+        // Inicializa la base de datos y el manejador de tokens de manera segura
+        databaseHelper = DatabaseHelper(applicationContext)
+        tokenDatabaseManager = TokenDatabaseManager(applicationContext)
+
         enableEdgeToEdge()
+
         setContent {
             ProyectoFCTTheme {
-                // Crea el controlador de navegación
+
                 val navController = rememberNavController()
 
-                // Definimos el NavHost con las rutas que tendrá tu aplicación
                 NavHost(navController = navController, startDestination = "login") {
-                    // Ruta para la pantalla de login
                     composable("login") { LoginScreen(navController) }
-
-                    // Ruta para la pantalla de registro
                     composable("register_screen") { RegisterScreen(navController) }
-
-                    // Ruta para la pantalla de añadir
                     composable("add_screen") {
-                        //  lista de equipos y la función que maneja la adición de un equipo
                         AddEquipoScreen(
                             navController = navController,
-                            equipos = equipos, // lista de equipos
+                            equipos = equipos,
                             onAddEquipo = { nuevoEquipo ->
-                                equipos.add(nuevoEquipo) //  añades el equipo a la lista
+                                equipos.add(nuevoEquipo)
                             }
                         )
                     }
-
-                    // Ruta para la pantalla de perfil
                     composable("profile_screen") { ProfileScreen(navController) }
-
-                    // Ruta para la pantalla principal
                     composable("main_screen") { MainScreen(navController) }
-
-                    // Ruta para la pantalla de detalle de un equipo
                     composable("detail_screen/{equipoNombre}") { backStackEntry ->
                         val equipoNombre = backStackEntry.arguments?.getString("equipoNombre") ?: ""
                         DetailScreen(navController, equipoNombre)
                     }
-
-                    // Ruta para la pantalla de escaneo QR
                     composable("qr_scan") { QRScanScreen(navController) }
-
-                    // Ruta para la pantalla de administrador
                     composable("admin_screen") { AdminScreen(navController) }
                 }
             }
         }
+
     }
 }

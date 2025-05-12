@@ -7,6 +7,7 @@ import javax.net.ssl.SSLHandshakeException
 import com.google.gson.JsonParseException
 import com.google.gson.stream.MalformedJsonException
 
+
 fun recibirMensajeDeError(t: Throwable): String {
     return when (t) {
         is UnknownHostException -> "No se pudo conectar al servidor. Verifica tu conexión a internet."

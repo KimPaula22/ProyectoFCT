@@ -32,7 +32,7 @@ fun QRScanScreen(navController: NavHostController) {
         // Si el resultado no es nulo, lo guardamos en scanResult
         if (result.contents != null) {
             scanResult = result.contents
-
+            /*
             RetrofitClient.instance.getEquipo(LoginRequest(MainActivity.correo, MainActivity.password), scanResult!!.toInt())
                 .enqueue(object : retrofit2.Callback<EquipoResponse> {
                     override fun onResponse(
@@ -66,6 +66,8 @@ fun QRScanScreen(navController: NavHostController) {
                         Toast.makeText(navController.context, errorMsg, Toast.LENGTH_SHORT).show()
                     }
                 })
+
+             */
 
         }
     }
