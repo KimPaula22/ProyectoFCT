@@ -1,6 +1,6 @@
 package com.example.proyectofct.Controler
 
-import com.example.proyectofct.Model.EquipoN
+import com.example.proyectofct.Model.Equipo
 import com.example.proyectofct.Model.Responses.*
 import com.example.proyectofct.Model.Requests.*
 import retrofit2.Call
@@ -16,7 +16,7 @@ interface ApiService {
 
     // Ruta para obtener los equipos
     @POST("equipos")
-    fun getEquipos(@Header("Authorization") token: String): Call<List<EquipoN>>
+    fun getEquipos(@Header("Authorization") token: String): Call<List<Equipo>>
 
 
     // Ruta para obtener un equipo en particular

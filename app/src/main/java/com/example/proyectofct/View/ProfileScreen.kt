@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,7 +13,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.proyectofct.MainActivity
 import com.example.proyectofct.Model.Equipo
+import com.example.proyectofct.Model.Role
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,14 +26,14 @@ fun ProfileScreen(
     val backStackEntry = navController.currentBackStackEntry!!
     val savedHandle = backStackEntry.savedStateHandle
     val initialName = savedHandle.get<String>("userName") ?: "Usuario Demo"
-    val initialRole = savedHandle.get<String>("role") ?: "Estudiante"
+    val initialRole = MainActivity.currentUserRole.name
 
     // Estado local editable
     var name by rememberSaveable { mutableStateOf(initialName) }
     var role by rememberSaveable { mutableStateOf(initialRole) }
 
     // Ejemplo de equipos asignados (podrías cargar reales)
-    val assigned = backStackEntry.savedStateHandle.get<List<Equipo>>("assigned") ?: emptyList()
+    val assigned = savedHandle.get<List<Equipo>>("assigned") ?: emptyList()
 
     Scaffold(
         topBar = {
@@ -39,7 +41,7 @@ fun ProfileScreen(
                 title = { Text("Perfil") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.AccountCircle, contentDescription = "Volver")
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Volver")
                     }
                 }
             )
@@ -64,16 +66,18 @@ fun ProfileScreen(
             Text(text = "Rol:", style = MaterialTheme.typography.bodyMedium)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = role == "Estudiante",
-                    onClick = { role = "Estudiante" }
+                    selected = role == Role.PROFESOR.name,
+                    onClick = { role = Role.PROFESOR.name }
                 )
-                Text("Estudiante", modifier = Modifier.clickable { role = "Estudiante" })
+                Spacer(Modifier.width(4.dp))
+                Text("Profesor", modifier = Modifier.clickable { role = Role.PROFESOR.name })
                 Spacer(Modifier.width(16.dp))
                 RadioButton(
-                    selected = role == "Profesor",
-                    onClick = { role = "Profesor" }
+                    selected = role == Role.ADMINISTRADOR.name,
+                    onClick = { role = Role.ADMINISTRADOR.name }
                 )
-                Text("Profesor", modifier = Modifier.clickable { role = "Profesor" })
+                Spacer(Modifier.width(4.dp))
+                Text("Administrador", modifier = Modifier.clickable { role = Role.ADMINISTRADOR.name })
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -101,9 +105,10 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.weight(1f))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Button(onClick = {
-                    // Guardar cambios
+                    // Guardar cambios en MainActivity
+                    MainActivity.currentUserRole = Role.valueOf(role)
                     savedHandle.set("userName", name)
-                    savedHandle.set("role", role)
+                    navController.popBackStack()
                 }) {
                     Text("Guardar")
                 }

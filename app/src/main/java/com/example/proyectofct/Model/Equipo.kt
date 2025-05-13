@@ -3,7 +3,7 @@ package com.example.proyectofct.Model
 import com.example.proyectofct.Model.componentes.*
 
 //version nueva (refactoriza el nombre de la clase y elimina o comenta al antigua)
-data class EquipoN(
+data class Equipo(
     var id: Int,
     var nombre: String,
     var descripcion: String = "",
@@ -20,11 +20,12 @@ data class EquipoN(
     )
 
 //version anterior
-data class Equipo(
+/*data class Equipo(
     var nombre: String,
     var estado: String,
+
     var ram: String = "",
     var cpu: String = "",
     var gpu: String = "",
     var ubicacion: String
-)
+)*/

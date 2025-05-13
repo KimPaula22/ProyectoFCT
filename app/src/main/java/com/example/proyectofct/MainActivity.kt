@@ -16,6 +16,7 @@ import com.example.proyectofct.Controler.llamadas.obtenerEquipos
 import com.example.proyectofct.Controler.llamadas.realizarLogin
 import com.example.proyectofct.Controler.llamadas.traducirComponente
 import com.example.proyectofct.Model.Equipo
+import com.example.proyectofct.Model.Role
 import com.example.proyectofct.View.AddEquipoScreen
 import com.example.proyectofct.View.AdminScreen
 import com.example.proyectofct.View.LoginScreen
@@ -33,6 +34,8 @@ class MainActivity : ComponentActivity() {
         var databaseHelper: DatabaseHelper? = null
         var tokenDatabaseManager: TokenDatabaseManager? = null
         val componentes : MutableList<Any> = mutableListOf() // Lista para almacenar los componentes
+        var currentUserRole: Role = Role.PROFESOR
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
