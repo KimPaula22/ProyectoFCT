@@ -11,8 +11,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.proyectofct.Controler.DatabaseHelper
 import com.example.proyectofct.Controler.TokenDatabaseManager
+import com.example.proyectofct.Controler.llamadas.obtenerComponentes
 import com.example.proyectofct.Controler.llamadas.obtenerEquipos
 import com.example.proyectofct.Controler.llamadas.realizarLogin
+import com.example.proyectofct.Controler.llamadas.traducirComponente
 import com.example.proyectofct.Model.Equipo
 import com.example.proyectofct.View.AddEquipoScreen
 import com.example.proyectofct.View.AdminScreen
@@ -30,6 +32,7 @@ class MainActivity : ComponentActivity() {
         val equipos = mutableListOf<Equipo>()
         var databaseHelper: DatabaseHelper? = null
         var tokenDatabaseManager: TokenDatabaseManager? = null
+        val componentes : MutableList<Any> = mutableListOf() // Lista para almacenar los componentes
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,8 +73,8 @@ class MainActivity : ComponentActivity() {
                     composable("qr_scan") { QRScanScreen(navController) }
                     composable("admin_screen") { AdminScreen(navController) }
                 }
+
             }
         }
-
     }
 }

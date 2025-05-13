@@ -54,7 +54,7 @@ fun realizarLogin(
                 // Usamos Handler para retrasar el siguiente intento
                 Handler(Looper.getMainLooper()).postDelayed({
                     realizarLogin(correo, contrasenia, onResultado, intentos + 1)
-                }, 3000) // 3 segundos de espera entre intentos
+                }, 7000) // 7 segundos de espera entre intentos
             } else {
                 // Si ya hemos intentado 3 veces, mostramos el mensaje de error
                 val mensaje = recibirMensajeDeError(t) + " Intentos agotados."
@@ -71,7 +71,7 @@ fun realizarLogin(
 
 //EJEMPLO DE USO
 /*
-realizarLogin("correo@example.com", "123456") { mensaje ->
+realizarLogin("usuario@example.com", "123456",0) { mensaje ->
 
     Log.d("LOGIN", mensaje)
 }

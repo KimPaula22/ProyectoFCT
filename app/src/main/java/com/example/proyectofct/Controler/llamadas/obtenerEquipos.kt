@@ -2,6 +2,8 @@ package com.example.proyectofct.Controler.llamadas
 
 import android.app.AlertDialog
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.navigation.NavController
 import com.example.proyectofct.Controler.RetrofitClient
@@ -14,7 +16,8 @@ import retrofit2.Response
 fun obtenerEquipos(
     context: Context,
     callback: (List<EquipoN>?) -> Unit,
-    navController: NavController
+    navController: NavController,
+    intento: Int = 0
 ) {
     var accessToken = tokenDatabaseManager?.getAccessToken()
     val authHeader = "Bearer $accessToken"
@@ -23,7 +26,30 @@ fun obtenerEquipos(
         override fun onResponse(call: Call<List<EquipoN>>, response: Response<List<EquipoN>>) {
             if (response.isSuccessful) {
                 val equipos = response.body()
-                Log.d("Equipos", "Equipos recibidos: $equipos")
+                //Formatear todas las fechas del equupo y sus componentes
+                equipos?.forEach { equipo ->
+                    equipo.fechaRegistro = formatearFecha(equipo.fechaRegistro)
+                    equipo.placaBase.fechaRegistro = formatearFecha(equipo.placaBase.fechaRegistro)
+                    equipo.cpu?.fechaRegistro = formatearFecha(equipo.cpu?.fechaRegistro)
+                    equipo.gpu?.fechaRegistro = formatearFecha(equipo.gpu?.fechaRegistro)
+
+                    equipo.rams?.forEach { ram ->
+                        ram.fechaRegistro = formatearFecha(ram.fechaRegistro)
+                    }
+
+                    equipo.roms?.forEach { rom ->
+                        rom.fechaRegistro = formatearFecha(rom.fechaRegistro)
+                    }
+
+                    equipo.pcis?.forEach { pci ->
+                        pci.fechaRegistro = formatearFecha(pci.fechaRegistro)
+                    }
+
+                    equipo.dispositivosIO?.forEach { dispositivoIO ->
+                        dispositivoIO.fechaRegistro = formatearFecha(dispositivoIO.fechaRegistro)
+                    }
+                }
+
                 callback(equipos)
             } else if (response.code() == 403) {
                 // Token inválido, intentar refrescar
@@ -45,8 +71,14 @@ fun obtenerEquipos(
         }
 
         override fun onFailure(call: Call<List<EquipoN>>, t: Throwable) {
-            Log.e("Equipos", "Error de red o en la llamada: ${t.message}")
-            callback(null)
+            if (intento < 3) {
+                Log.e("Equipos", "Error de red o en la llamada: ${t.message}")
+                Handler(Looper.getMainLooper()).postDelayed({
+                obtenerEquipos(context, callback, navController, intento + 1)}, 7000)
+            } else {
+                Log.e("Equipos", "Error de red o en la llamada: ${t.message}")
+                callback(null)
+            }
         }
     })
 }
@@ -67,7 +99,7 @@ fun mostrarSesionCaducadaDialog(context: Context, navController: NavController) 
 
 // EJEMPLO DE USO
 /*
-obtenerEquipos(context, { equipos ->
+obtenerEquipos(this, { equipos ->
     if (equipos != null) {
         Log.d("Equipos", "Equipos obtenidos: $equipos")
         MainActivity.equipos.clear()
@@ -75,5 +107,5 @@ obtenerEquipos(context, { equipos ->
     } else {
         Log.d("Equipos", "No se pudieron obtener los equipos.")
     }
-}, navController)
+}, navController,0)
 */

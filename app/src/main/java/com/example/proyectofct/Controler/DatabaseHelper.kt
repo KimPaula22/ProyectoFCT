@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 
 class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "tokens.db", null, 1) {
 
-    // Método para crear la base de datos
+    // Metodo para crear la base de datos
     override fun onCreate(db: SQLiteDatabase) {
         // Crear la tabla tokens si no existe
         val createTableQuery = """
