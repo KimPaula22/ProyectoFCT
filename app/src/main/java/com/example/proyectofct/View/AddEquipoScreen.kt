@@ -59,7 +59,7 @@ fun AddEquipoScreen(navController: NavHostController, equipos: MutableList<Equip
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Button(
+           /* Button(
                 onClick = {
                     if (nombre.isNotBlank() && estado.isNotBlank() && ubicacion.isNotBlank()) {
                         val nuevoEquipo = Equipo(nombre = nombre, estado = estado, ubicacion = ubicacion)
@@ -72,7 +72,7 @@ fun AddEquipoScreen(navController: NavHostController, equipos: MutableList<Equip
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Añadir Equipo")
-            }
+            }*/
         }
     }
 }

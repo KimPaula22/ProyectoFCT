@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -62,7 +63,14 @@ fun MainScreen(navController: NavHostController) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Inventario") })
+            TopAppBar(
+                title = { Text("Inventario") },
+                actions = {
+                    IconButton(onClick = { navController.navigate("profile_screen") }) {
+                        Icon(Icons.Default.Person, contentDescription = "Perfil")
+                    }
+                }
+            )
         },
         floatingActionButton = {
             Row(

@@ -8,22 +8,22 @@ import android.util.Log
 import androidx.navigation.NavController
 import com.example.proyectofct.Controler.RetrofitClient
 import com.example.proyectofct.MainActivity.Companion.tokenDatabaseManager
-import com.example.proyectofct.Model.EquipoN
+import com.example.proyectofct.Model.Equipo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 fun obtenerEquipos(
     context: Context,
-    callback: (List<EquipoN>?) -> Unit,
+    callback: (List<Equipo>?) -> Unit,
     navController: NavController,
     intento: Int = 0
 ) {
     var accessToken = tokenDatabaseManager?.getAccessToken()
     val authHeader = "Bearer $accessToken"
 
-    RetrofitClient.instance.getEquipos(authHeader).enqueue(object : Callback<List<EquipoN>> {
-        override fun onResponse(call: Call<List<EquipoN>>, response: Response<List<EquipoN>>) {
+    RetrofitClient.instance.getEquipos(authHeader).enqueue(object : Callback<List<Equipo>> {
+        override fun onResponse(call: Call<List<Equipo>>, response: Response<List<Equipo>>) {
             if (response.isSuccessful) {
                 val equipos = response.body()
                 //Formatear todas las fechas del equupo y sus componentes
@@ -70,7 +70,7 @@ fun obtenerEquipos(
             }
         }
 
-        override fun onFailure(call: Call<List<EquipoN>>, t: Throwable) {
+        override fun onFailure(call: Call<List<Equipo>>, t: Throwable) {
             if (intento < 3) {
                 Log.e("Equipos", "Error de red o en la llamada: ${t.message}")
                 Handler(Looper.getMainLooper()).postDelayed({
