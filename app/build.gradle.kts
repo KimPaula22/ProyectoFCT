@@ -77,4 +77,6 @@ dependencies {
     implementation (libs.retrofit)
     implementation (libs.converter.gson)
 
+    //Para traducir fecha de un objeto anonimo
+    implementation (libs.kotlin.reflect)
 }

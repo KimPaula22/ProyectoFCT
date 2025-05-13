@@ -1,5 +1,6 @@
 package com.example.proyectofct.Model
 
+import androidx.collection.ObjectList
 import com.example.proyectofct.Model.Equipo
 
 class Responses {
@@ -17,4 +18,5 @@ class Responses {
     data class RefreshResponse(
         val accessToken: String,
     )
+
 }

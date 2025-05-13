@@ -1,6 +1,5 @@
 package com.example.proyectofct.Controler
 
-import com.example.proyectofct.Model.Equipo
 import com.example.proyectofct.Model.EquipoN
 import com.example.proyectofct.Model.Responses.*
 import com.example.proyectofct.Model.Requests.*
@@ -27,6 +26,11 @@ interface ApiService {
     // Ruta para refrescar el token
     @POST("refresh")
     fun refreshToken(@Body request: RefreshRequest): Call<RefreshResponse>
+
+    // Ruta para componentes/{estado}
+    @POST("componentes/{estado}")
+    fun getComponentes(@Header("Authorization") authHeader: String,@Path("estado") estado: String): Call<List<Map<String, Any>>>
+
 
 }
 

@@ -33,6 +33,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "compose-material-icons" }  # <- Agrega esta línea
 # ZXing
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 zxing = { group = "com.journeyapps", name = "zxing-android-embedded", version = "4.2.0" }
 [plugins]

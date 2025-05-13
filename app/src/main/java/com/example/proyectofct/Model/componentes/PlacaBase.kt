@@ -12,7 +12,7 @@ data class PlacaBase (
     var modelo: String?,
     var tipoSocket: String?,
     var chipset: String?,
-    var memoriaRamMax: Int?,
+    var memoriaMaxRam: Int?,
     var ranurasRam: Int?,
     var ranurasPci: Int?,
     var ranurasSata: Int?,

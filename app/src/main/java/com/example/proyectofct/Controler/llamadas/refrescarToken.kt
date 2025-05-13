@@ -1,5 +1,7 @@
 package com.example.proyectofct.Controler.llamadas
 
+import android.os.Handler
+import android.os.Looper
 import com.example.proyectofct.Controler.RetrofitClient
 import com.example.proyectofct.Controler.recibirMensajeDeError
 import com.example.proyectofct.MainActivity.Companion.tokenDatabaseManager
@@ -39,8 +41,8 @@ fun refrescarToken(intentos: Int = 0, onResultado: (mensaje: String) -> Unit) {
             override fun onFailure(call: Call<Responses.RefreshResponse>, t: Throwable) {
                 if (intentos < 3) {
                     val mensajeError = recibirMensajeDeError(t)
-                    onResultado(mensajeError)
-                    refrescarToken(intentos + 1, onResultado)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                    refrescarToken(intentos + 1, onResultado)}, 7000)
                 } else {
                     onResultado(recibirMensajeDeError(t) + " Intentos agotados.")
                     tokenDatabaseManager?.guardarTokens("", "")
