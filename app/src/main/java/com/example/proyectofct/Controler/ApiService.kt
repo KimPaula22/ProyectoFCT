@@ -21,7 +21,7 @@ interface ApiService {
 
     // Ruta para obtener un equipo en particular
     @POST("equipo/{id}")
-    fun getEquipo(@Body request: LoginRequest, @Path("id") id: Int): Call<EquipoResponse>
+    fun getEquipo(@Header("Authorization") authHeader: String, @Path("id") id: Int): Call<EquipoResponse>
 
     // Ruta para refrescar el token
     @POST("refresh")
@@ -31,6 +31,14 @@ interface ApiService {
     @POST("componentes/{estado}")
     fun getComponentes(@Header("Authorization") authHeader: String,@Path("estado") estado: String): Call<List<Map<String, Any>>>
 
+    @POST("nuevo/usuario/{rol}")
+    fun crearUsuario(@Header("Authorization") authHeader: String, @Path("rol") rol: String, @Body usuarioRequest: UsuarioRequest): Call<MensajeResponse>
+
+    @POST("usuarios/aceptar/{id}")
+    fun aceptarUsuario(@Header("Authorization") authHeader: String, @Path("id") id: String): Call<MensajeResponse>
+
+    @POST("usuarios/rechazar/{id}")
+    fun rechazarUsuario(@Header("Authorization") authHeader: String, @Path("id") id: String): Call<MensajeResponse>
 
 }
 

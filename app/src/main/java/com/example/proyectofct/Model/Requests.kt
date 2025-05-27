@@ -10,5 +10,17 @@ class Requests {
         val refreshToken: String
     )
 
+    data class UsuarioRequest(
+        val email: String,
+        val contrasena: String,
+        val nombre: String,
+        val apellido: String,
+        val dni: String
+    )
+
+    data class MensajeResponse(
+        val mensaje: String
+    )
+
 
 }

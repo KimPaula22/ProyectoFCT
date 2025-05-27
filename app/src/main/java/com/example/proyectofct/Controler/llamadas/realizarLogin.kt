@@ -15,12 +15,11 @@ import retrofit2.Response
 
 //Funcion casi terminada, falta guardar los tokes y asi no tener que hacer el login hasta dentro 7d o
 //que se invalide el token
-//Faltan los metodos de recibir los equipos, el logout y el refrechtoken
 fun realizarLogin(
     correo: String,
     contrasenia: String,
-    onResultado: (mensaje: String) -> Unit,
-    intentos: Int = 0 // Parámetro para el contador de intentos
+    intentos: Int = 0, // Parámetro para el contador de intentos
+    onResultado: (mensaje: String) -> Unit
 ) {
     val loginRequest = Requests.LoginRequest(correo, contrasenia)
 
@@ -53,7 +52,7 @@ fun realizarLogin(
 
                 // Usamos Handler para retrasar el siguiente intento
                 Handler(Looper.getMainLooper()).postDelayed({
-                    realizarLogin(correo, contrasenia, onResultado, intentos + 1)
+                    realizarLogin(correo, contrasenia,intentos + 1, onResultado )
                 }, 7000) // 7 segundos de espera entre intentos
             } else {
                 // Si ya hemos intentado 3 veces, mostramos el mensaje de error
@@ -72,7 +71,6 @@ fun realizarLogin(
 //EJEMPLO DE USO
 /*
 realizarLogin("usuario@example.com", "123456",0) { mensaje ->
-
     Log.d("LOGIN", mensaje)
 }
 */
