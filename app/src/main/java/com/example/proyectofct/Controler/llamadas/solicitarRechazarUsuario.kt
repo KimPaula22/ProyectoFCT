@@ -50,8 +50,10 @@ fun solicitarRechazarUsuario(
         }
 
         override fun onFailure(call: Call<Requests.MensajeResponse>, t: Throwable) {
-            if (intento < 3) {
+            Log.e("CrearUsuario", "Error de red: ${t.message}")
+            if (intento < 6) {
                 Handler(Looper.getMainLooper()).postDelayed({
+                    Log.d("CrearUsuario", "Reintentando...")
                     solicitarRechazarUsuario(context, navController, dni, callback, intento + 1)
                 }, 7000)
             } else {

@@ -13,8 +13,6 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-//Funcion casi terminada, falta guardar los tokes y asi no tener que hacer el login hasta dentro 7d o
-//que se invalide el token
 fun realizarLogin(
     correo: String,
     contrasenia: String,
@@ -46,7 +44,9 @@ fun realizarLogin(
         }
 
         override fun onFailure(call: Call<Responses.LoginResponse>, t: Throwable) {
-            if (intentos < 3) {
+            Log.e("LOGIN", "Error de red: ${t.message}")
+
+            if (intentos < 6) {
                 // Si aún no hemos alcanzado el límite de intentos, intentamos de nuevo
                 Log.d("LOGIN", "Intento ${intentos + 1} fallido. Reintentando...")
 

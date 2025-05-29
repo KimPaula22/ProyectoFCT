@@ -30,7 +30,9 @@ fun solicitarAceptarUsuario(
             if (response.isSuccessful) {
                 callback(response.body()?.mensaje)
             } else if (response.code() == 403) {
+                Log.d("CrearUsuario", "Token inválido. Intentando refrescar...")
                 refrescarToken(0) { mensaje ->
+                    Log.d("CrearUsuario", "Reintentando con nuevo token: $mensaje")
                     val nuevoToken = tokenDatabaseManager?.getAccessToken()
                     if (!nuevoToken.isNullOrEmpty()) {
                         solicitarAceptarUsuario(context, navController, dni, callback)
@@ -52,7 +54,9 @@ fun solicitarAceptarUsuario(
         }
 
         override fun onFailure(call: Call<Requests.MensajeResponse>, t: Throwable) {
-            if (intento < 3) {
+            Log.e("CrearUsuario", "Error de red: ${t.message}")
+            if (intento < 6) {
+                Log.d("CrearUsuario", "Intento $intento fallido. Reintentando...")
                 Handler(Looper.getMainLooper()).postDelayed({
                     solicitarAceptarUsuario(context, navController, dni, callback, intento + 1)
                 }, 7000)

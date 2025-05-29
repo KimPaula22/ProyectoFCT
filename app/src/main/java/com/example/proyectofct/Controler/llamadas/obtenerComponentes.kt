@@ -43,9 +43,11 @@ fun obtenerComponentes(
 
                 callback(componentesTraducidos)
             } else if (response.code() == 403) {
+                Log.d("Componentes", "Token inválido. Intentando refrescar...")
                 refrescarToken(0) { _ ->
                     val nuevoToken = tokenDatabaseManager?.getAccessToken()
                     if (!nuevoToken.isNullOrEmpty()) {
+                        Log.d("Componentes", "Reintentando con nuevo token: $nuevoToken")
                         obtenerComponentes(context, callback, navController, estado)
                     } else {
                         mostrarSesionCaducadaDialog(context, navController)
@@ -62,6 +64,7 @@ fun obtenerComponentes(
             if (intento < 3) {
                 Log.d("Componentes", "Error de red o en la llamada: ${t.message}")
                 Handler(Looper.getMainLooper()).postDelayed({
+                    Log.d("Componentes", "Reintentando...")
                     obtenerComponentes(context, callback, navController, estado, intento + 1)
                 }, 7000)
             } else {

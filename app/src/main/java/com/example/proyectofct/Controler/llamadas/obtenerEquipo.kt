@@ -81,9 +81,11 @@ fun obtenerEquipo(
                     callback(equipo)
 
                 } else if (response.code() == 403) {
+                    Log.d("Equipo", "Token inválido. Intentando refrescar...")
                     refrescarToken(0) { _ ->
                         val nuevoToken = tokenDatabaseManager?.getAccessToken()
                         if (!nuevoToken.isNullOrEmpty()) {
+                            Log.d("Equipo", "Reintentando con nuevo token: $nuevoToken")
                             obtenerEquipo(equipoId, context, callback, navController)
                         } else {
                             mostrarSesionCaducadaDialog(context, navController)
@@ -98,7 +100,8 @@ fun obtenerEquipo(
 
             override fun onFailure(call: Call<Responses.EquipoResponse>, t: Throwable) {
                 Log.e("Equipo", "Error de red: ${t.localizedMessage}")
-                if (intento < 3) {
+                if (intento < 6) {
+                    Log.d("Equipo", "Intento $intento fallido. Reintentando...")
                     Handler(Looper.getMainLooper()).postDelayed({
                         obtenerEquipo(equipoId, context, callback, navController, intento + 1)
                     }, 7000)
