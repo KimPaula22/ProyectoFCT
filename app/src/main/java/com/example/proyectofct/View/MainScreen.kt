@@ -36,6 +36,9 @@ fun MainScreen(navController: NavHostController) {
     var componentes by remember { mutableStateOf<List<Any>>(emptyList()) }
     val context = LocalContext.current
 
+    var profesorFiltro by remember { mutableStateOf<String?>(null) }
+    var aulaFiltro by remember { mutableStateOf<String?>(null) }
+
     LaunchedEffect(Unit) {
         obtenerComponentes(
             context = context,
@@ -56,10 +59,33 @@ fun MainScreen(navController: NavHostController) {
     var selectedStatus by remember { mutableStateOf("Todos") }
 
     val filteredEquipos = equipos.filter {
-        (it.nombre.contains(searchQuery.text, ignoreCase = true) ||
+        val coincideBusqueda = it.nombre.contains(searchQuery.text, ignoreCase = true) ||
                 it.estado.contains(searchQuery.text, ignoreCase = true) ||
-                (it.ubicacion.nombre ?: "").contains(searchQuery.text, ignoreCase = true)) &&
-                (selectedStatus == "Todos" || it.estado == selectedStatus)
+                (it.ubicacion.nombre ?: "").contains(searchQuery.text, ignoreCase = true)
+
+        val coincideEstado = selectedStatus == "Todos" || it.estado == selectedStatus
+        val coincideProfesor = profesorFiltro == null || it.usuario?.nombre == profesorFiltro
+        val coincideAula = aulaFiltro == null || it.ubicacion.nombre == aulaFiltro
+
+        coincideBusqueda && coincideEstado && coincideProfesor && coincideAula
+    }
+
+    val filteredComponentes = componentes.filter {
+        val estado = when (it) {
+            is Cpu -> it.estado
+            is Ram -> it.estado
+            is Rom -> it.estado
+            is PlacaBase -> it.estado
+            is DispositivoIO -> it.estado
+            is Pci -> it.estado
+            else -> "Desconocido"
+        }
+
+        val texto = it.toString().lowercase()
+        val coincideBusqueda = texto.contains(searchQuery.text.lowercase())
+        val coincideEstado = selectedStatus == "Todos" || estado == selectedStatus
+
+        coincideBusqueda && coincideEstado
     }
 
     Scaffold(
@@ -132,6 +158,22 @@ fun MainScreen(navController: NavHostController) {
                 }
             }
 
+            if (profesorFiltro != null || aulaFiltro != null) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        profesorFiltro = null
+                        aulaFiltro = null
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    )
+                ) {
+                    Text("Limpiar filtro de profesor/aula")
+                }
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
@@ -167,17 +209,25 @@ fun MainScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(24.dp))
 
             when (viewMode) {
-                ViewMode.EQUIPOS -> EquiposTable(equipos = filteredEquipos) {
-                    navController.navigate("detail_screen/${it.nombre}")
-                }
-                ViewMode.COMPONENTES -> ComponentesList(componentes = componentes)
+                ViewMode.EQUIPOS -> EquiposTable(
+                    equipos = filteredEquipos,
+                    onItemClick = { navController.navigate("detail_screen/${it.nombre}") },
+                    onProfesorClick = { profesorFiltro = it },
+                    onAulaClick = { aulaFiltro = it }
+                )
+                ViewMode.COMPONENTES -> ComponentesList(componentes = filteredComponentes)
             }
         }
     }
 }
 
 @Composable
-fun EquiposTable(equipos: List<Equipo>, onItemClick: (Equipo) -> Unit) {
+fun EquiposTable(
+    equipos: List<Equipo>,
+    onItemClick: (Equipo) -> Unit,
+    onProfesorClick: (String) -> Unit,
+    onAulaClick: (String) -> Unit
+) {
     var sortField by remember { mutableStateOf("nombre") }
     var sortAscending by remember { mutableStateOf(true) }
 
@@ -210,34 +260,10 @@ fun EquiposTable(equipos: List<Equipo>, onItemClick: (Equipo) -> Unit) {
                 .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                "Nombre",
-                modifier = Modifier
-                    .weight(2f)
-                    .clickable { toggleSort("nombre") },
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                "Estado",
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable { toggleSort("estado") },
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                "Ubicación",
-                modifier = Modifier
-                    .weight(2f)
-                    .clickable { toggleSort("ubicacion") },
-                style = MaterialTheme.typography.titleMedium
-            )
-            Text(
-                "Profesor",
-                modifier = Modifier
-                    .weight(2f)
-                    .clickable { toggleSort("profesor") },
-                style = MaterialTheme.typography.titleMedium
-            )
+            Text("Nombre", modifier = Modifier.weight(2f).clickable { toggleSort("nombre") })
+            Text("Estado", modifier = Modifier.weight(1f).clickable { toggleSort("estado") })
+            Text("Ubicación", modifier = Modifier.weight(2f).clickable { toggleSort("ubicacion") })
+            Text("Profesor", modifier = Modifier.weight(2f).clickable { toggleSort("profesor") })
         }
 
         Divider()
@@ -256,15 +282,30 @@ fun EquiposTable(equipos: List<Equipo>, onItemClick: (Equipo) -> Unit) {
                 ) {
                     Text(equipo.nombre, modifier = Modifier.weight(2f))
                     Text(equipo.estado, modifier = Modifier.weight(1f))
-                    Text(equipo.ubicacion.nombre ?: "Sin ubicación", modifier = Modifier.weight(2f))
-                    Text(equipo.usuario?.nombre ?: "Sin profesor", modifier = Modifier.weight(2f))
+                    Text(
+                        equipo.ubicacion.nombre ?: "Sin ubicación",
+                        modifier = Modifier
+                            .weight(2f)
+                            .clickable(enabled = equipo.ubicacion.nombre != null) {
+                                equipo.ubicacion.nombre?.let { onAulaClick(it) }
+                            },
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        equipo.usuario?.nombre ?: "Sin profesor",
+                        modifier = Modifier
+                            .weight(2f)
+                            .clickable(enabled = equipo.usuario?.nombre != null) {
+                                equipo.usuario?.nombre?.let { onProfesorClick(it) }
+                            },
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
                 Divider()
             }
         }
     }
 }
-
 
 @Composable
 fun ComponentesList(componentes: List<Any>) {
