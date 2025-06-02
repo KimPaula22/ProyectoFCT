@@ -1,6 +1,7 @@
 package com.example.proyectofct.View
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +15,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,6 @@ fun MainScreen(navController: NavHostController) {
     var componentes by remember { mutableStateOf<List<Any>>(emptyList()) }
     val context = LocalContext.current
 
-    // Cargar componentes desde servidor
     LaunchedEffect(Unit) {
         obtenerComponentes(
             context = context,
@@ -82,20 +83,20 @@ fun MainScreen(navController: NavHostController) {
                     onClick = { navController.navigate("qr_scan") },
                     containerColor = MaterialTheme.colorScheme.primary
                 ) {
-                    Icon(Icons.Default.QrCodeScanner, "Escanear QR")
+                    Icon(Icons.Default.QrCodeScanner, contentDescription = "Escanear QR")
                 }
                 if (role == Role.ADMINISTRADOR) {
                     FloatingActionButton(
                         onClick = { navController.navigate("add_screen") },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-                        Icon(Icons.Default.Add, "Añadir equipo")
+                        Icon(Icons.Default.Add, contentDescription = "Añadir equipo")
                     }
                     FloatingActionButton(
                         onClick = { navController.navigate("prestar_equipo_screen") },
                         containerColor = MaterialTheme.colorScheme.primary
                     ) {
-                        Icon(Icons.Default.ArrowForward, "Prestar equipo")
+                        Icon(Icons.Default.ArrowForward, contentDescription = "Prestar equipo")
                     }
                 }
             }
@@ -114,22 +115,25 @@ fun MainScreen(navController: NavHostController) {
                 label = { Text("Buscar...") },
                 modifier = Modifier.fillMaxWidth()
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Button(onClick = { selectedStatus = "Todos" }, modifier = Modifier.weight(1f)) {
-                    Text("Todos")
-                }
-                Button(onClick = { selectedStatus = "Disponible" }, modifier = Modifier.weight(1f)) {
-                    Text("Disponible")
-                }
-                Button(onClick = { selectedStatus = "En préstamo" }, modifier = Modifier.weight(1f)) {
-                    Text("En préstamo")
+                listOf("Todos", "Disponible", "En préstamo").forEach { status ->
+                    Button(
+                        onClick = { selectedStatus = status },
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(status)
+                    }
                 }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -143,7 +147,9 @@ fun MainScreen(navController: NavHostController) {
                         else
                             MaterialTheme.colorScheme.secondaryContainer
                     )
-                ) { Text("Equipos") }
+                ) {
+                    Text("Equipos")
+                }
                 Button(
                     onClick = { viewMode = ViewMode.COMPONENTES },
                     modifier = Modifier.weight(1f),
@@ -153,11 +159,15 @@ fun MainScreen(navController: NavHostController) {
                         else
                             MaterialTheme.colorScheme.secondaryContainer
                     )
-                ) { Text("Componentes") }
+                ) {
+                    Text("Componentes")
+                }
             }
+
             Spacer(modifier = Modifier.height(24.dp))
+
             when (viewMode) {
-                ViewMode.EQUIPOS -> EquiposList(equipos = filteredEquipos) {
+                ViewMode.EQUIPOS -> EquiposTable(equipos = filteredEquipos) {
                     navController.navigate("detail_screen/${it.nombre}")
                 }
                 ViewMode.COMPONENTES -> ComponentesList(componentes = componentes)
@@ -167,30 +177,103 @@ fun MainScreen(navController: NavHostController) {
 }
 
 @Composable
-fun EquiposList(equipos: List<Equipo>, onItemClick: (Equipo) -> Unit) {
-    LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        items(equipos) { equipo ->
-            Card(
+fun EquiposTable(equipos: List<Equipo>, onItemClick: (Equipo) -> Unit) {
+    var sortField by remember { mutableStateOf("nombre") }
+    var sortAscending by remember { mutableStateOf(true) }
+
+    val sortedEquipos = remember(equipos, sortField, sortAscending) {
+        equipos.sortedWith(compareBy<Equipo> {
+            when (sortField) {
+                "nombre" -> it.nombre.lowercase()
+                "estado" -> it.estado.lowercase()
+                "ubicacion" -> it.ubicacion.nombre?.lowercase() ?: ""
+                "profesor" -> it.usuario?.nombre?.lowercase() ?: ""
+                else -> it.nombre.lowercase()
+            }
+        }.let { if (sortAscending) it else it.reversed() })
+    }
+
+    fun toggleSort(field: String) {
+        if (sortField == field) {
+            sortAscending = !sortAscending
+        } else {
+            sortField = field
+            sortAscending = true
+        }
+    }
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                "Nombre",
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onItemClick(equipo) },
-                elevation = CardDefaults.cardElevation(4.dp)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = equipo.nombre, style = MaterialTheme.typography.titleMedium)
-                    Text(text = "Estado: ${equipo.estado}", style = MaterialTheme.typography.bodyMedium)
-                    Text(text = "Ubicación: ${equipo.ubicacion.nombre}", style = MaterialTheme.typography.bodySmall)
+                    .weight(2f)
+                    .clickable { toggleSort("nombre") },
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                "Estado",
+                modifier = Modifier
+                    .weight(1f)
+                    .clickable { toggleSort("estado") },
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                "Ubicación",
+                modifier = Modifier
+                    .weight(2f)
+                    .clickable { toggleSort("ubicacion") },
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                "Profesor",
+                modifier = Modifier
+                    .weight(2f)
+                    .clickable { toggleSort("profesor") },
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+
+        Divider()
+
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.fillMaxHeight()
+        ) {
+            items(sortedEquipos) { equipo ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onItemClick(equipo) }
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(equipo.nombre, modifier = Modifier.weight(2f))
+                    Text(equipo.estado, modifier = Modifier.weight(1f))
+                    Text(equipo.ubicacion.nombre ?: "Sin ubicación", modifier = Modifier.weight(2f))
+                    Text(equipo.usuario?.nombre ?: "Sin profesor", modifier = Modifier.weight(2f))
                 }
+                Divider()
             }
         }
     }
 }
 
+
 @Composable
 fun ComponentesList(componentes: List<Any>) {
     LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         items(componentes) { comp ->
-            Card(modifier = Modifier.fillMaxWidth(), elevation = CardDefaults.cardElevation(4.dp)) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     when (comp) {
                         is Cpu -> {
@@ -224,4 +307,7 @@ fun ComponentesList(componentes: List<Any>) {
     }
 }
 
-enum class ViewMode { EQUIPOS, COMPONENTES }
+enum class ViewMode {
+    EQUIPOS,
+    COMPONENTES
+}

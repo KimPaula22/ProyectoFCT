@@ -17,6 +17,7 @@ data class Equipo(
     var roms: ArrayList<Rom>? = emptyList<Rom>() as ArrayList<Rom>?,
     var pcis: ArrayList<Pci>? = emptyList<Pci>() as ArrayList<Pci>?,
     var dispositivosIO: ArrayList<DispositivoIO>? = emptyList<DispositivoIO>() as ArrayList<DispositivoIO>?,
+    var usuario: Usuario? = null
     )
 
 //version anterior

@@ -27,20 +27,18 @@ fun RegisterScreen(navController: NavHostController) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center
         ) {
-            // Campo para el email
+            //  email
             OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth())
             Spacer(modifier = Modifier.height(8.dp))
-            // Campo para la contraseña
+            //  contraseña
             OutlinedTextField(value = password, onValueChange = { password = it }, label = { Text("Contraseña") }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation())
             Spacer(modifier = Modifier.height(8.dp))
-            // Campo para confirmar la contraseña
+            // confirmar la contraseña
             OutlinedTextField(value = confirmPassword, onValueChange = { confirmPassword = it }, label = { Text("Confirmar Contraseña") }, modifier = Modifier.fillMaxWidth(), visualTransformation = PasswordVisualTransformation())
             Spacer(modifier = Modifier.height(16.dp))
             // Botón para registrar al usuario
             Button(
                 onClick = {
-                    // Aquí puedes agregar la lógica para registrar al usuario y guardar sus datos en la base de datos
-                    // Por ejemplo: registerUser(email, password)
                     navController.navigate("login") // Redirige al login después de registrarse
                 },
                 modifier = Modifier.fillMaxWidth()
