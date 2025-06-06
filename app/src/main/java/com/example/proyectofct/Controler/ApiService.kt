@@ -3,7 +3,9 @@ package com.example.proyectofct.Controler
 import com.example.proyectofct.Model.Equipo
 import com.example.proyectofct.Model.Responses.*
 import com.example.proyectofct.Model.Requests.*
+import com.example.proyectofct.Model.Usuario
 import retrofit2.Call
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -40,6 +42,8 @@ interface ApiService {
     @POST("usuarios/rechazar/{id}")
     fun rechazarUsuario(@Header("Authorization") authHeader: String, @Path("id") id: String): Call<MensajeResponse>
 
+    @POST("/miusuario")
+    fun getMisDatos(@Header("Authorization") token: String): Call<Usuario>
 }
 
 

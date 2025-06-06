@@ -15,7 +15,7 @@ import retrofit2.Response
 
 fun obtenerComponentes(
     context: Context,
-    callback: (List<Any>?) -> Unit, // Cambiado a List<Any> para devolver los objetos ya traducidos
+    callback: (List<Pair<Int, Any>>?) -> Unit, // Cambiado a List<Any> para devolver los objetos ya traducidos
     navController: NavController,
     estado: String,
     intento: Int = 0
@@ -33,11 +33,11 @@ fun obtenerComponentes(
         ) {
             if (response.isSuccessful) {
                 val componentes = response.body()
-                val componentesTraducidos = mutableListOf<Any>()
+                val componentesTraducidos = mutableListOf<Pair<Int, Any>>() // lista mutable de pares
 
                 componentes?.forEach { componente ->
                     val casted = componente as? Map<String, Any>
-                    val traduccion = casted?.let { traducirComponente(it) }?.second
+                    val traduccion = casted?.let { traducirComponente(it) }
                     traduccion?.let { componentesTraducidos.add(it) }
                 }
 
@@ -61,7 +61,7 @@ fun obtenerComponentes(
         }
 
         override fun onFailure(call: Call<List<Map<String, Any>>>, t: Throwable) {
-            if (intento < 3) {
+            if (intento < 6) {
                 Log.d("Componentes", "Error de red o en la llamada: ${t.message}")
                 Handler(Looper.getMainLooper()).postDelayed({
                     Log.d("Componentes", "Reintentando...")

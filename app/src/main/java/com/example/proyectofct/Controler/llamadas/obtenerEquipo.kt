@@ -39,6 +39,7 @@ fun obtenerEquipo(
                             Equipo(
                                 id = equipoResponse.id,
                                 nombre = equipoResponse.nombre ?: "Equipo $equipoResponse.id",
+                                tipo = equipoResponse.tipo,
                                 descripcion = it1,
                                 fechaRegistro = formatearFecha(equipoResponse.fechaRegistro),
                                 estado = equipoResponse.estado,

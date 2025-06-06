@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.proyectofct.Controler.RetrofitClient
+import com.example.proyectofct.Controler.llamadas.obtenerEquipo
 import com.example.proyectofct.Controler.recibirMensajeDeError
 import com.example.proyectofct.DetailScreen
 import com.example.proyectofct.MainActivity
@@ -26,49 +27,45 @@ import retrofit2.Response
 @Composable
 fun QRScanScreen(navController: NavHostController) {
     var scanResult by remember { mutableStateOf<String?>(null) }
+    val scannedId = scanResult?.toIntOrNull()
 
     // El launcher para escanear el QR
     val scanLauncher = rememberLauncherForActivityResult(ScanContract()) { result ->
         // Si el resultado no es nulo, lo guardamos en scanResult
         if (result.contents != null) {
             scanResult = result.contents
-            /*
-            RetrofitClient.instance.getEquipo(LoginRequest(MainActivity.correo, MainActivity.password), scanResult!!.toInt())
-                .enqueue(object : retrofit2.Callback<EquipoResponse> {
-                    override fun onResponse(
-                        call: Call<EquipoResponse>,
-                        response: Response<EquipoResponse>
-                    ) {
-                        if (response.isSuccessful) {
-                            val equipo = response.body()?.equipo
-                            //Mandar a detailScreen
-                            if (equipo != null) {
-                                if (!MainActivity.equipos.contains(equipo)) {
-                                    MainActivity.equipos = MainActivity.equipos + equipo
-                                }
-                                navController.navigate("detail_screen/${equipo.id}")
-                            }
+            val scannedId = scanResult?.toIntOrNull()
+            //buscar si esta en el mainactivity.equipos
+            if (scannedId != null) {
+                val equipoEncontrado = MainActivity.equipos.find { it.id == scannedId }
+                if (equipoEncontrado != null) {
+                    navController.navigate("detail_screen/${equipoEncontrado.id}")
+                } else {
+                    Toast.makeText(
+                        navController.context,
+                        "Obteniendo equipo de la base de datos...",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    obtenerEquipo(scannedId, navController.context, {
+                        if (it != null) {
+                            MainActivity.equipos.add(it)
+                            navController.navigate("detail/${it.id}")
                         } else {
-                            // manejar error de respuesta
-                            if (response.code() == 404) {
-                                Toast.makeText(
-                                    navController.context,
-                                    "No se encontró el equipo",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            Toast.makeText(
+                                navController.context,
+                                "No se pudo obtener el equipo o no existe",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
-                    }
-
-                    override fun onFailure(call: Call<EquipoResponse>, t: Throwable) {
-                        // manejar fallo de conexión
-                        val errorMsg = recibirMensajeDeError(t)
-                        Toast.makeText(navController.context, errorMsg, Toast.LENGTH_SHORT).show()
-                    }
-                })
-
-             */
-
+                    }, navController, 0)
+                }
+            }else{
+                Toast.makeText(
+                    navController.context,
+                    "QR no valido",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
 

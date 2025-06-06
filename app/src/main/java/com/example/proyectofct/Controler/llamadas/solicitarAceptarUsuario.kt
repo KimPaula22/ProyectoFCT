@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.navigation.NavController
 import com.example.proyectofct.Controler.RetrofitClient
 import com.example.proyectofct.MainActivity.Companion.tokenDatabaseManager
@@ -61,6 +62,7 @@ fun solicitarAceptarUsuario(
                     solicitarAceptarUsuario(context, navController, dni, callback, intento + 1)
                 }, 7000)
             } else {
+                Toast.makeText(context, "No se pudo conectar con el servidor", Toast.LENGTH_LONG).show()
                 callback("Error de red: ${t.message}")
             }
         }

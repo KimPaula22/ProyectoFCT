@@ -13,6 +13,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.proyectofct.Controler.llamadas.obtenerMisDatos
+import com.example.proyectofct.Controler.llamadas.realizarLogin
+import com.example.proyectofct.MainActivity.Companion.miUsuario
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,6 +27,10 @@ fun LoginScreen(navController: NavHostController) {
     var showDialog by remember { mutableStateOf(false) }
     var inputName by remember { mutableStateOf("") }
     var selectedRole by remember { mutableStateOf("Estudiante") }
+    var isInvalid by remember { mutableStateOf(false) }
+    var textError by remember { mutableStateOf("") }
+    var isLoggedIn by remember { mutableStateOf(false) }
+    var scope = rememberCoroutineScope()
 
     // Datos de prueba
     val usuarioPrueba = "usuario@hotmail.com"
@@ -48,7 +56,12 @@ fun LoginScreen(navController: NavHostController) {
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                supportingText = {
+                    if (isInvalid) {
+                        Text(textError, color = MaterialTheme.colorScheme.error)
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
@@ -64,21 +77,75 @@ fun LoginScreen(navController: NavHostController) {
                             contentDescription = if (showPassword) "Ocultar contraseña" else "Mostrar contraseña"
                         )
                     }
+                },
+                supportingText = {
+                    if (isInvalid) {
+                        Text(textError, color = MaterialTheme.colorScheme.error)
+                    }
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
+                    // El dialogo lo podria mostrar cuando sea admin
+                    /*
                     if (email == usuarioPrueba && password == passwordPrueba) {
                         inputName = deriveName(email)
                         selectedRole = deriveRole(email)
                         showDialog = true
                     }
+                    */
+                    if (isLoggedIn) {
+                        return@Button
+                    }
+
+                    if (email.isNotBlank() && password.isNotBlank()) {
+                        scope.launch {
+                            isLoggedIn = true
+                            realizarLogin(correo = email, contrasenia = password, 0) { mensaje ->
+                                if (mensaje == "Login exitoso") {
+                                    obtenerMisDatos(navController.context, navController, mensaje) { usuario, mensaje ->
+                                        if (usuario != null) {
+                                            miUsuario = usuario
+                                            selectedRole = usuario.rol
+                                            // Aqui se compararia si es admin o no y saldra el dialogo, el rol q devuelve la api es "admin" y "profesor"
+                                            if (showDialog) {
+                                                // saltaria el dialog y de ahi lo mandaria al main screen
+                                            } else {
+                                                // directamente lo mandaria al main screen
+                                                navController.currentBackStackEntry?.savedStateHandle?.set("userName", usuario.nombre)
+                                                navController.currentBackStackEntry?.savedStateHandle?.set("role", usuario.rol.uppercase())
+                                                navController.navigate("main_screen")
+                                            }
+                                        }
+                                    }
+                                    inputName = deriveName(email)
+                                    selectedRole = deriveRole(email)
+                                } else {
+                                    isInvalid = true
+                                    textError = mensaje
+                                    isLoggedIn = false
+                                }
+                            }
+                        }
+                        // No deberías establecer `isLoggedIn = true` aquí directamente, ya que puede activarse sin éxito real
+                    } else {
+                        isInvalid = true
+                        textError = "Por favor, completa todos los campos"
+                    }
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Iniciar Sesión")
+                if (isLoggedIn) {
+                    // COLOR SECUNDARIO MAINTHEME
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                } else {
+                    Text("Iniciar Sesión")
+                }
             }
+
             Spacer(modifier = Modifier.height(8.dp))
             TextButton(
                 onClick = {
@@ -98,14 +165,17 @@ fun LoginScreen(navController: NavHostController) {
             title = { Text("Bienvenido") },
             text = {
                 Column {
+                    /*
                     OutlinedTextField(
                         value = inputName,
                         onValueChange = { inputName = it },
                         label = { Text("¿Cómo te llamas?") },
                         modifier = Modifier.fillMaxWidth()
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Selecciona tu rol:")
+                    */
+                    Text("Selecciona tu vista (se podra cambiar en la configuracion de perfil):")
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
                             selected = selectedRole == "Administrador",

@@ -3,11 +3,13 @@ package com.example.proyectofct.Controler.llamadas
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import com.example.proyectofct.Controler.RetrofitClient
 import com.example.proyectofct.Controler.recibirMensajeDeError
 import com.example.proyectofct.MainActivity.Companion.tokenDatabaseManager
 import com.example.proyectofct.Model.Requests
 import com.example.proyectofct.Model.Responses
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +39,17 @@ fun realizarLogin(
                     Log.e("LOGIN", "Token no recibido del servidor.")
                     onResultado("Token no recibido del servidor.")
                 }
+            } else if (response.code() == 401) {
+                Log.e("LOGIN", "Credenciales inválidas.")
+                onResultado("Email o contraseña incorrectos")
+            }else if (response.code() == 403) {
+                val errorJson = response.errorBody()?.string()
+                val mensaje = try {
+                    JSONObject(errorJson ?: "").getString("mensaje")
+                } catch (e: Exception) {
+                    "Acceso denegado"
+                }
+                onResultado(mensaje)
             } else {
                 Log.e("LOGIN", "Error HTTP: ${response.code()} - ${response.errorBody()?.string()}")
                 onResultado("Error en el login: ${response.code()}")

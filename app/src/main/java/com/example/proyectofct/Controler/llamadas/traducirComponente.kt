@@ -10,7 +10,6 @@ import java.util.*
 
 fun traducirComponente(componente: Map<String, Any>): Pair<Int, Any>? {
     val gson = Gson()
-
     var resultado = when {
         "chipset" in componente -> Pair(0, gson.fromJson(gson.toJson(componente), PlacaBase::class.java))
         "nucleos" in componente -> Pair(1, gson.fromJson(gson.toJson(componente), Cpu::class.java))
@@ -22,7 +21,7 @@ fun traducirComponente(componente: Map<String, Any>): Pair<Int, Any>? {
 
     if (resultado == null) {
         resultado = when {
-            "capacidad" in componente && "tipo" !in componente -> Pair(4, gson.fromJson(gson.toJson(componente), Rom::class.java))
+            "capacidad" in componente && "tipo" in componente -> Pair(4, gson.fromJson(gson.toJson(componente), Rom::class.java))
             else -> Pair(5, gson.fromJson(gson.toJson(componente), Pci::class.java))
         }
     }
@@ -32,27 +31,6 @@ fun traducirComponente(componente: Map<String, Any>): Pair<Int, Any>? {
 
     return Pair(resultado.first, componenteConFechaFormateada)
 }
-
-//fun traducir componente de un componente de tipo any y no map
-fun traducirComponente(componente: Any): Pair<Int, Any>? {
-    val tipoTraducido = when (componente) {
-        is PlacaBase -> 0
-        is Cpu -> 1
-        is Gpu -> 2
-        is Ram -> 3
-        is Rom -> 4
-        is Pci -> 5
-        is DispositivoIO -> 6
-        else -> return null
-    }
-
-    return Pair(tipoTraducido, componente)
-}
-
-
-
-
-
 
 fun formatearFechaObjeto(objeto: Any): Any {
     // Usamos la reflexión para buscar el campo `fechaRegistro` y formatearlo

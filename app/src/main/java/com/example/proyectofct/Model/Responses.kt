@@ -20,6 +20,7 @@ class Responses {
     data class EquipoResponse(
         val id: Int,
         val nombre: String?,
+        val tipo: String,
         val descripcion: String? = "",
         val fechaRegistro: String,
         val estado: String,

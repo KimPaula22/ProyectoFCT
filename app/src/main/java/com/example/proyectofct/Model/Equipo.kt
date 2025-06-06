@@ -6,6 +6,7 @@ import com.example.proyectofct.Model.componentes.*
 data class Equipo(
     var id: Int,
     var nombre: String,
+    var tipo: String,
     var descripcion: String = "",
     var fechaRegistro: String,
     var estado: String, //'Disponible','En uso', 'Prestado', 'Averiado','Otro', 'Desconocido'

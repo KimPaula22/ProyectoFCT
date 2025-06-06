@@ -73,11 +73,11 @@ fun ProfileScreen(
                 Text("Profesor", modifier = Modifier.clickable { role = Role.PROFESOR.name })
                 Spacer(Modifier.width(16.dp))
                 RadioButton(
-                    selected = role == Role.ADMINISTRADOR.name,
-                    onClick = { role = Role.ADMINISTRADOR.name }
+                    selected = role == Role.ADMIN.name,
+                    onClick = { role = Role.ADMIN.name }
                 )
                 Spacer(Modifier.width(4.dp))
-                Text("Administrador", modifier = Modifier.clickable { role = Role.ADMINISTRADOR.name })
+                Text("Administrador", modifier = Modifier.clickable { role = Role.ADMIN.name })
             }
 
             Spacer(modifier = Modifier.height(16.dp))

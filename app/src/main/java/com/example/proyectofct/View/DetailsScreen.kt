@@ -1,10 +1,25 @@
 package com.example.proyectofct
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeveloperBoard
+import androidx.compose.material.icons.filled.ImageAspectRatio
+import androidx.compose.material.icons.filled.Keyboard
+import androidx.compose.material.icons.filled.Memory
+import androidx.compose.material.icons.filled.QuestionMark
+import androidx.compose.material.icons.filled.SelectAll
+import androidx.compose.material.icons.filled.Sip
+import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.ViewDay
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -17,12 +32,13 @@ import com.example.proyectofct.Model.componentes.Pci
 import com.example.proyectofct.Model.componentes.PlacaBase
 import com.example.proyectofct.Model.componentes.Ram
 import com.example.proyectofct.Model.componentes.Rom
+import com.example.proyectofct.View.QRConDescarga
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavHostController, equipoNombre: String) {
+fun DetailScreen(navController: NavHostController, equipo: Equipo?) {
+    var mostrarQR by remember { mutableStateOf(false) }
 
-    val equipo = MainActivity.equipos.firstOrNull { it.nombre == equipoNombre }
 
     /*val equipos = listOf(
         // Primer equipo (Ordenador A)
@@ -300,7 +316,7 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Detalles de ${equipo.nombre}") },
+                    title = { Text("Detalles del equipo") },
                     navigationIcon = {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
@@ -313,29 +329,225 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(text = "Nombre: ${equipo.nombre}", style = MaterialTheme.typography.titleLarge)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Estado: ${equipo.estado}", style = MaterialTheme.typography.bodyMedium)
-                        Text(text = "Ubicación: ${equipo.ubicacion}", style = MaterialTheme.typography.bodyMedium)
-                        Text(text = "RAM: ${equipo.rams}", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "CPU: ${equipo.cpu}", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "GPU: ${equipo.gpu}", style = MaterialTheme.typography.bodyLarge)
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                    ){
+                        Row {
+                            Icon(Icons.Default.QuestionMark, contentDescription = "General")
+                            Text(text = "Información general", style = MaterialTheme.typography.titleMedium)
+                        }
+                        Text("ID: ${equipo.id}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nombre: ${equipo.nombre}", style = MaterialTheme.typography.bodySmall)
+                        Text("Ubicación: ${equipo.ubicacion.nombre}", style = MaterialTheme.typography.bodySmall)
+                        Text("Estado: ${equipo.estado}", style = MaterialTheme.typography.bodySmall)
+                        if (equipo.usuario != null) {
+                            Text("Prestamista: ${equipo.usuario}", style = MaterialTheme.typography.bodySmall)
+                        }
+                        Text("Descripción: ${equipo.descripcion?: "No hay descripción"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Fecha registro: ${equipo.fechaRegistro}", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+                Card {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    ) {
+                        Row {
+                            Icon(Icons.Default.DeveloperBoard, contentDescription = "Placa Base")
+                            Text(text = "Placa Base", style = MaterialTheme.typography.titleMedium)
+                        }
+                        Text("Id: ${equipo.placaBase.id}", style = MaterialTheme.typography.bodySmall)
+                        Text("Fecha registro: ${equipo.placaBase.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nombre: ${equipo.placaBase.nombreSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Modelo: ${equipo.placaBase.modelo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Número serie: ${equipo.placaBase.numeroSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Socket: ${equipo.placaBase.tipoSocket?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Chipset: ${equipo.placaBase.chipset?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Max memoria RAM: ${equipo.placaBase.memoriaMaxRam?: "Indefinida"} GB", style = MaterialTheme.typography.bodySmall)
+                        Text("Ranuras RAM: ${equipo.placaBase.ranurasRam?: "Indefinida"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Ranuras PCI: ${equipo.placaBase.ranurasPci?: "Indefinida"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Ranuras SATA: ${equipo.placaBase.ranurasSata?: "Indefinida"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Ranuras M.2: ${equipo.placaBase.ranurasM2?: "Indefinida"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Estado: ${equipo.placaBase.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nota: ${equipo.placaBase.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
                     }
                 }
 
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+
+                        Row {
+                            Icon(Icons.Default.Memory, contentDescription = "Componentes")
+                            Text(text = "CPU", style = MaterialTheme.typography.titleMedium)
+                        }
+                        Text("Id: ${equipo.cpu?.id}", style = MaterialTheme.typography.bodySmall)
+                        Text("Fecha registro: ${equipo.cpu?.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nombre: ${equipo.cpu?.nombreSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Modelo: ${equipo.cpu?.modelo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Número serie: ${equipo.cpu?.numeroSerieCpu?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Arquitectura: ${equipo.cpu?.arquitectura?: "Indefinida"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Socket: ${equipo.cpu?.socket?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Frecuencia: ${equipo.cpu?.frecuenciaGhz?: "Indefinida"} GHz", style = MaterialTheme.typography.bodySmall)
+                        Text("Nucleos: ${equipo.cpu?.nucleos?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Hilos: ${equipo.cpu?.hilos?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("TDP: ${equipo.cpu?.tdpWatts?: "Indefinido"} W", style = MaterialTheme.typography.bodySmall)
+                        Text("Estado: ${equipo.cpu?.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nota: ${equipo.cpu?.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    ) {
+                        Row {
+                            Icon(Icons.Default.SelectAll, contentDescription = "GPU")
+                            Text(text = "GPU", style = MaterialTheme.typography.titleMedium)
+                        }
+                        Text("Id: ${equipo.gpu?.id}", style = MaterialTheme.typography.bodySmall)
+                        Text("Fecha registro: ${equipo.gpu?.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nombre: ${equipo.gpu?.nombreSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Modelo: ${equipo.gpu?.modelo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Número serie: ${equipo.gpu?.numeroSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Memoria VRAM: ${equipo.gpu?.memoriaVram?: "Indefinida"} GB", style = MaterialTheme.typography.bodySmall)
+                        Text("Tipo memoria: ${equipo.gpu?.tipoMemoria?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Consumo energía: ${equipo.gpu?.consumoWatts?: "Indefinida"} W", style = MaterialTheme.typography.bodySmall)
+                        Text("Estado: ${equipo.gpu?.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                        Text("Nota: ${equipo.gpu?.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ){
+                        Row{
+                            Icon(Icons.Default.ImageAspectRatio, contentDescription = "Componentes")
+                            Text(text = "RAMs", style = MaterialTheme.typography.titleMedium)
+                        }
+                        for (ram in equipo.rams ?: emptyList()) {
+                            Text("Id: ${ram.id}", style = MaterialTheme.typography.bodySmall)
+                            Text("Fecha registro: ${ram.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nombre: ${ram.nombreSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Número serie: ${ram.numeroSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Capacidad: ${ram.capacidad?: "Indefinida"} GB", style = MaterialTheme.typography.bodySmall)
+                            Text("Frecuencia: ${ram.frecuencia?: "Indefinida"} MHz", style = MaterialTheme.typography.bodySmall)
+                            Text("Latencia: ${ram.latencia?: "Indefinida"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Tipo: ${ram.tipo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Estado: ${ram.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nota: ${ram.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ){
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ){
+                        Row{
+                            Icon(Icons.Default.Storage, contentDescription = "Discos duros")
+                            Text(text = "Discos duros", style = MaterialTheme.typography.titleMedium)
+                        }
+                        for (rom in equipo.roms ?: emptyList()) {
+                            Text("Id: ${rom.id}", style = MaterialTheme.typography.bodySmall)
+                            Text("Fecha de registro: ${rom.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nombre: ${rom.nombreSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Número de serie: ${rom.numeroSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Capacidad: ${rom.capacidad?: "Indefinida"} GB", style = MaterialTheme.typography.bodySmall)
+                            Text("Tipo: ${rom.tipo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Estado: ${rom.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nota: ${rom.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                    ) {
+                        Row {
+                            Icon(Icons.Default.ViewDay, contentDescription = "PCIs")
+                            Text(text = "PCIs", style = MaterialTheme.typography.titleMedium)
+                        }
+                        for (pci in equipo.pcis ?: emptyList()) {
+                            Text("Id: ${pci.id}", style = MaterialTheme.typography.bodySmall)
+                            Text("Fecha de registro: ${pci.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nombre: ${pci.nombreSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Número de serie: ${pci.numeroSerie?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Tipo: ${pci.tipo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Estado: ${pci.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nota: ${pci.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+
+                }
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                    ) {
+                        Row {
+                            Icon(Icons.Default.Keyboard, contentDescription = "Dispositivos IO")
+                            Text(text = "Dispositivos I/O", style = MaterialTheme.typography.titleMedium)
+                        }
+                        for (dispositivoIO in equipo.dispositivosIO ?: emptyList()) {
+                            Text("Id: ${dispositivoIO.id}", style = MaterialTheme.typography.bodySmall)
+                            Text("Fecha de registro: ${dispositivoIO.fechaRegistro?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Marca: ${dispositivoIO.marca?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Modelo: ${dispositivoIO.modelo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Tipo: ${dispositivoIO.tipo?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Estado: ${dispositivoIO.estado?: "Indefinido"}", style = MaterialTheme.typography.bodySmall)
+                            Text("Nota: ${dispositivoIO.nota?: "No hay nota"}", style = MaterialTheme.typography.bodySmall)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+                }
+
+
                 Spacer(modifier = Modifier.weight(1f))
+                // Boton mostrar qr/ocultar qr
+                Button(
+                    onClick = {if (mostrarQR) {mostrarQR = false} else {mostrarQR = true}},
+                    modifier = Modifier.fillMaxWidth()
+                ){
+                    Text(if (mostrarQR) "Ocultar QR" else "Mostrar QR")
+                }
+                if (mostrarQR) {
+                    QRConDescarga(equipo.id.toString())
+                }
+                Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
                     onClick = {
-                        // Aquí puedes implementar la lógica para prestar el equipo
+                        // TODO:Aquí puedes implementar la lógica para prestar el equipo
                     },
                     enabled = equipo.estado == "Disponible",
                     modifier = Modifier
@@ -367,10 +579,11 @@ fun DetailScreen(navController: NavHostController, equipoNombre: String) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "No se pudo encontrar el equipo con nombre: $equipoNombre",
+                    text = "No se pudo encontrar el equipo",
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
     }
 }
+

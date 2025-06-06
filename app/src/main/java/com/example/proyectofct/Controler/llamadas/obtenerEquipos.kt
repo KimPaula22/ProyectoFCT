@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.widget.Toast
 import androidx.navigation.NavController
 import com.example.proyectofct.Controler.RetrofitClient
 import com.example.proyectofct.MainActivity.Companion.tokenDatabaseManager
@@ -50,6 +51,7 @@ fun obtenerEquipos(
                     }
                 }
 
+
                 callback(equipos)
             } else if (response.code() == 403) {
                 // Token inválido, intentar refrescar
@@ -80,6 +82,7 @@ fun obtenerEquipos(
                 obtenerEquipos(context, callback, navController, intento + 1)}, 7000)
             } else {
                 Log.e("Equipos", "Error de red o en la llamada: ${t.message}")
+                Toast.makeText(context, "No se pudo conectar con el servidor", Toast.LENGTH_LONG).show()
                 callback(null)
             }
         }
