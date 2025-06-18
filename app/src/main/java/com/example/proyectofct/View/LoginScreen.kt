@@ -150,7 +150,7 @@ fun LoginScreen(navController: NavHostController) {
             TextButton(
                 onClick = {
                     // Aquí podrías navegar a una pantalla de registro real
-                    navController.navigate("registro")
+                    navController.navigate("register_screen")
                 },
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
