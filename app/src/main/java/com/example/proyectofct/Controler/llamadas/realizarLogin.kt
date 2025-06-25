@@ -3,7 +3,6 @@ package com.example.proyectofct.Controler.llamadas
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.widget.Toast
 import com.example.proyectofct.Controler.RetrofitClient
 import com.example.proyectofct.Controler.recibirMensajeDeError
 import com.example.proyectofct.MainActivity.Companion.tokenDatabaseManager
@@ -18,7 +17,7 @@ import retrofit2.Response
 fun realizarLogin(
     correo: String,
     contrasenia: String,
-    intentos: Int = 0, // Parámetro para el contador de intentos
+    intentos: Int = 0,
     onResultado: (mensaje: String) -> Unit
 ) {
     val loginRequest = Requests.LoginRequest(correo, contrasenia)

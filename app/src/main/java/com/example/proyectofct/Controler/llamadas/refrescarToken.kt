@@ -12,6 +12,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Realiza una llamada a la API para refrescar el token de acceso utilizando el refresh token almacenado.
+ *
+ * @param intentos Número de reintentos en caso de fallos (poner 0 significa 7 intentos, si se pone 1, serán 6 intentos, etc.)
+ * @param onResultado Callback que se llama con el resultado de la operación.
+ */
 fun refrescarToken(intentos: Int = 0, onResultado: (mensaje: String) -> Unit) {
     // Obtener el refresh token almacenado en la base de datos
     val refreshToken = tokenDatabaseManager?.getRefreshToken()

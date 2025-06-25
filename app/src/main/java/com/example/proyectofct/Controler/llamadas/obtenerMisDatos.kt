@@ -13,14 +13,27 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Realiza una llamada a la API para obtener los datos del usuario actual.
+ *
+ * @param context El contexto de la aplicación.
+ * @param navController El controlador de navegación para manejar la navegación.
+ * @param accessToken El token de acceso del usuario, si está disponible.
+ * @param intentos Número de reintentos en caso de fallos (poner 0 significa 7 intentos, si se pone 1, serán 6 intentos, etc.)
+ * @param onResultado Callback que se llama con el resultado de la operación.
+ */
 fun obtenerMisDatos(
     context: Context,
     navController: NavController,
-    accessToken: String,
+    accessToken: String?,
     intentos: Int = 0,
     onResultado: (usuario: Usuario?, mensaje: String) -> Unit
 ) {
-    RetrofitClient.instance.getMisDatos("Bearer $accessToken")
+    var token = accessToken
+    if (token.isNullOrEmpty()) {
+        token = tokenDatabaseManager?.getAccessToken()
+    }
+    RetrofitClient.instance.getMisDatos("Bearer $token")
         .enqueue(object : Callback<Usuario> {
             override fun onResponse(call: Call<Usuario>, response: Response<Usuario>) {
                 if (response.isSuccessful) {
@@ -31,9 +44,9 @@ fun obtenerMisDatos(
                         onResultado(null, "No se recibieron datos del usuario")
                     }
                 } else if (response.code() == 403) {
-                    Log.d("CrearUsuario", "Token inválido. Intentando refrescar...")
+                    Log.d("MIUSUARIO", "Token inválido. Intentando refrescar...")
                     refrescarToken(0) { mensaje ->
-                        Log.d("CrearUsuario", "Reintentando con nuevo token: $mensaje")
+                        Log.d("MIUSUARIO", "Reintentando con nuevo token: $mensaje")
                         val nuevoToken = tokenDatabaseManager?.getAccessToken()
                         if (!nuevoToken.isNullOrEmpty()) {
                             obtenerMisDatos(context,navController,nuevoToken, intentos, onResultado)

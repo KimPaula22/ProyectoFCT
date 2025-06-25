@@ -95,6 +95,7 @@ fun mostrarSesionCaducadaDialog(context: Context, navController: NavController) 
         .setMessage("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.")
         .setCancelable(false)
         .setPositiveButton("Aceptar") { _, _ ->
+            tokenDatabaseManager?.borrarTokens()
             navController.navigate("login") {
                 popUpTo(0) { inclusive = true } // Limpia el backstack
             }

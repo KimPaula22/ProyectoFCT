@@ -15,7 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.proyectofct.Controler.llamadas.obtenerMisDatos
 import com.example.proyectofct.Controler.llamadas.realizarLogin
+import com.example.proyectofct.MainActivity.Companion.currentUserRole
 import com.example.proyectofct.MainActivity.Companion.miUsuario
+import com.example.proyectofct.Model.Role
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,6 +109,11 @@ fun LoginScreen(navController: NavHostController) {
                                     obtenerMisDatos(navController.context, navController, mensaje) { usuario, mensaje ->
                                         if (usuario != null) {
                                             miUsuario = usuario
+                                            currentUserRole = if (usuario.rol == "admin") {
+                                                Role.ADMIN
+                                            } else {
+                                                Role.PROFESOR
+                                            }
                                             selectedRole = usuario.rol
                                             // Aqui se compararia si es admin o no y saldra el dialogo, el rol q devuelve la api es "admin" y "profesor"
                                             if (showDialog) {

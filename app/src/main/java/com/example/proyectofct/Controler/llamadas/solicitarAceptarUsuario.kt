@@ -14,6 +14,15 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Realiza una llamada a la API para aceptar un usuario por su DNI.
+ *
+ * @param context El contexto de la aplicación.
+ * @param navController El controlador de navegación para manejar la navegación.
+ * @param dni El DNI del usuario a aceptar.
+ * @param callback Callback que se llama con el resultado de la operación.
+ * @param intento Número de reintentos en caso de fallos (poner 0 significa 7 intentos, si se pone 1, serán 6 intentos, etc.)
+ */
 fun solicitarAceptarUsuario(
     context: Context,
     navController: NavController,

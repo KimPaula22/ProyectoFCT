@@ -14,6 +14,16 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Realiza una llamada a la API para crear un nuevo usuario.
+ *
+ * @param context El contexto de la aplicación.
+ * @param navController El controlador de navegación para manejar la navegación.
+ * @param usuarioRequest El objeto que contiene los datos del usuario a crear.
+ * @param rol El rol del usuario a crear (por ejemplo, "usuario" o "administrador").
+ * @param callback Callback que se llama con el resultado de la operación.
+ * @param intento Número de reintentos en caso de fallos (poner 0 significa 7 intentos, si se pone 1, serán 6 intentos, etc.)
+ */
 fun solicitarCrearUsuario(
     context: Context,
     navController: NavController,

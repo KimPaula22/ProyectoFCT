@@ -8,6 +8,12 @@ import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
+/**
+ * Traduce un componente representado como un mapa a un objeto específico de tipo PlacaBase, Cpu, Gpu, Ram, Rom, Pci o DispositivoIO.
+ *
+ * @param componente El mapa que representa el componente a traducir.
+ * @return Un par donde el primer elemento es un entero que indica el tipo de componente y el segundo elemento es el objeto traducido.
+ */
 fun traducirComponente(componente: Map<String, Any>): Pair<Int, Any>? {
     val gson = Gson()
     var resultado = when {

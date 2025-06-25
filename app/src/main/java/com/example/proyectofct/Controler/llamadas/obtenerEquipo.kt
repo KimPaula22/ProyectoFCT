@@ -14,7 +14,14 @@ import com.example.proyectofct.Model.Ubicacion
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
+/** * Realiza una llamada a la API para obtener un equipo específico por su ID.
+ *
+ * @param equipoId El ID del equipo a obtener.
+ * @param context El contexto de la aplicación.
+ * @param callback Callback que se llama con el resultado de la operación.
+ * @param navController El controlador de navegación para manejar la navegación.
+ * @param intento Número de reintentos en caso de fallos (poner 0 significa 7 intentos, si se pone 1, serán 6 intentos, etc.)
+ */
 fun obtenerEquipo(
     equipoId: Int,
     context: Context,

@@ -30,6 +30,7 @@ import com.example.proyectofct.View.MainScreen
 import com.example.proyectofct.View.ProfileScreen
 import com.example.proyectofct.View.QRScanScreen
 import com.example.proyectofct.View.RegisterScreen
+import com.example.proyectofct.View.ConnectionScreen
 import com.example.proyectofct.ui.theme.ProyectoFCTTheme
 
 
@@ -64,7 +65,8 @@ class MainActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val token = tokenDatabaseManager?.getAccessToken()
 
-                NavHost(navController = navController, startDestination = if (token != null) "main_screen" else "login") {
+                NavHost(navController = navController, startDestination = "connection_screen") {
+                    composable("connection_screen") { ConnectionScreen(navController) }
                     composable("login") { LoginScreen(navController) }
                     composable("register_screen") { RegisterScreen(navController) }
                     composable("add_screen") {

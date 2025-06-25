@@ -13,6 +13,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Traduce un componente del servidor a un objeto Pair con el numero del tipo del componente y el objeto traducido.
+ * @param componente El componente a traducir.
+ * @return Un Pair con el numero del tipo del componente y el objeto traducido, o null si no se puede traducir.
+ */
 fun obtenerComponentes(
     context: Context,
     callback: (List<Pair<Int, Any>>?) -> Unit, // Cambiado a List<Any> para devolver los objetos ya traducidos

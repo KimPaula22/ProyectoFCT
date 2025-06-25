@@ -65,4 +65,10 @@ class TokenDatabaseManager(context: Context) {
         db.close()
         return refreshToken
     }
+
+    fun borrarTokens() {
+        val db = dbHelper.writableDatabase
+        db.delete("tokens", "id = ?", arrayOf("1"))
+        db.close()
+    }
 }

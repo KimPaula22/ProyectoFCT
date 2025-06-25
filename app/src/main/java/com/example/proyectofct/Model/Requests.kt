@@ -22,5 +22,8 @@ class Requests {
         val mensaje: String
     )
 
+    data class ValidateRefreshRequest(
+        val refreshToken: String
+    )
 
 }

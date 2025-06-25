@@ -16,7 +16,6 @@ class Responses {
         val refreshToken: String
     )
 
-
     data class EquipoResponse(
         val id: Int,
         val nombre: String?,
@@ -34,9 +33,15 @@ class Responses {
         val dispositivosIO: List<DispositivoIO>?
     )
 
-
     data class RefreshResponse(
         val accessToken: String,
     )
 
+    data class LogoutResponse(
+        val mensaje: String
+    )
+
+    data class ValidateRefreshResponse(
+        val valido: Boolean
+    )
 }
