@@ -23,6 +23,7 @@ import com.example.proyectofct.MainActivity
 import com.example.proyectofct.MainActivity.Companion.miUsuario
 import com.example.proyectofct.Model.Equipo
 import com.example.proyectofct.Model.Role
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,9 +33,8 @@ fun ProfileScreen(
     // Estado local editable
     var name by rememberSaveable { mutableStateOf("") }
     var apellidos by rememberSaveable { mutableStateOf("") }
-    var role by rememberSaveable { mutableStateOf(Role.PROFESOR.name) }
+    var role by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
-    var viewMode by rememberSaveable { mutableStateOf(Role.PROFESOR.name) }
 
     // Estados para los diálogos
     var mostrarDialogoCerrarSesion by remember { mutableStateOf(false) }
@@ -55,9 +55,8 @@ fun ProfileScreen(
                     miUsuario = usuario
                     name = usuario.nombre
                     apellidos = usuario.apellidos
-                    role = usuario.rol
+                    role = usuario.rol.uppercase(Locale.getDefault())
                     email = usuario.email
-                    viewMode = usuario.rol
                 } else {
                     Toast.makeText(navController.context, mensaje, Toast.LENGTH_SHORT).show()
                 }
@@ -72,7 +71,6 @@ fun ProfileScreen(
                 apellidos = usuario.apellidos
                 role = usuario.rol
                 email = usuario.email
-                viewMode = usuario.rol
             }
         }
     }
@@ -146,22 +144,22 @@ fun ProfileScreen(
                 )
 
                 // Selector de vista (solo para administradores)
-                if (role == Role.ADMIN.name) {
+                if (role.uppercase(Locale.getDefault()) == Role.ADMIN.name) {
                     Text(text = "Vista (Solo administrador):", style = MaterialTheme.typography.bodyMedium)
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
-                            selected = viewMode == Role.PROFESOR.name,
-                            onClick = { viewMode = Role.PROFESOR.name }
+                            selected = role == Role.PROFESOR.name,
+                            onClick = { role = Role.PROFESOR.name }
                         )
                         Spacer(Modifier.width(4.dp))
-                        Text("Profesor", modifier = Modifier.clickable { viewMode = Role.PROFESOR.name })
+                        Text("Profesor", modifier = Modifier.clickable { role = Role.PROFESOR.name })
                         Spacer(Modifier.width(16.dp))
                         RadioButton(
-                            selected = viewMode == Role.ADMIN.name,
-                            onClick = { viewMode = Role.ADMIN.name }
+                            selected = role == Role.ADMIN.name,
+                            onClick = { role = Role.ADMIN.name }
                         )
                         Spacer(Modifier.width(4.dp))
-                        Text("Administrador", modifier = Modifier.clickable { viewMode = Role.ADMIN.name })
+                        Text("Administrador", modifier = Modifier.clickable { role = Role.ADMIN.name })
                     }
                 }
 
@@ -195,10 +193,7 @@ fun ProfileScreen(
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Button(onClick = {
                         // Guardar cambios en MainActivity
-                        MainActivity.currentUserRole = Role.valueOf(role)
-                        if (role == Role.ADMIN.name) {
-                            savedHandle.set("viewMode", viewMode)
-                        }
+                        MainActivity.currentUserRole = Role.valueOf(role.uppercase())
                         savedHandle.set("userName", name)
                         navController.popBackStack()
                     }) {

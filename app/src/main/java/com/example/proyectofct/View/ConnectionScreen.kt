@@ -1,5 +1,6 @@
 package com.example.proyectofct.View
 
+import android.content.pm.PackageManager
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -33,6 +34,13 @@ import kotlinx.coroutines.delay
 @Composable
 fun ConnectionScreen(navController: NavHostController) {
     val context = LocalContext.current
+    // Obtener la versión de la app
+    val versionName = try {
+        val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        pInfo.versionName ?: ""
+    } catch (e: PackageManager.NameNotFoundException) {
+        ""
+    }
 
     // Estado para controlar el mensaje que se muestra
     var mensaje by remember { mutableStateOf("Conectando con el servidor... Esto puede durar unos minutos.") }
@@ -105,65 +113,76 @@ fun ConnectionScreen(navController: NavHostController) {
     }
 
     // UI de la pantalla
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Logo de la aplicación
-        Image(
-            painter = painterResource(id = R.drawable.ayalagest),
-            contentDescription = "Logo de la aplicación",
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
             modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // Icono de recarga animado (solo se muestra mientras comprueba la conexión)
-        if (comprobando) {
-            Icon(
-                imageVector = Icons.Default.Refresh,
-                contentDescription = "Comprobando conexión",
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Logo de la aplicación
+            Image(
+                painter = painterResource(id = R.drawable.ayalagest),
+                contentDescription = "Logo de la aplicación",
                 modifier = Modifier
-                    .size(48.dp)
-                    .rotate(rotation),
-                tint = MaterialTheme.colorScheme.primary
+                    .size(120.dp)
+                    .clip(CircleShape)
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-        // Mensaje de estado
-        Text(
-            text = mensaje,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = if (mostrarBotonRecargar) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Botón para recargar (solo visible después de un error)
-        if (mostrarBotonRecargar) {
-            Button(
-                onClick = {
-                    mensaje = "Conectando con el servidor..."
-                    comprobando = true
-                    mostrarBotonRecargar = false
-                }
-            ) {
+            // Icono de recarga animado (solo se muestra mientras comprueba la conexión)
+            if (comprobando) {
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
+                    contentDescription = "Comprobando conexión",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .rotate(rotation),
+                    tint = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Reintentar")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Mensaje de estado
+            Text(
+                text = mensaje,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = if (mostrarBotonRecargar) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botón para recargar (solo visible después de un error)
+            if (mostrarBotonRecargar) {
+                Button(
+                    onClick = {
+                        mensaje = "Conectando con el servidor..."
+                        comprobando = true
+                        mostrarBotonRecargar = false
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Reintentar")
+                }
             }
         }
+        // Versión de la app abajo centrado
+        Text(
+            text = "Versión $versionName",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 16.dp)
+        )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.proyectofct.Controler.llamadas
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -56,8 +57,9 @@ fun obtenerMisDatos(
                         }
                     }
                 }else {
-                    val errorMsg = "Error HTTP: ${response.code()} - ${response.errorBody()?.string()}"
+                    val errorMsg = "No se pudieron obtener tus datos. Por favor, inténtalo de nuevo más tarde. (Código: ${response.code()})"
                     Log.e("MIUSUARIO", errorMsg)
+                    mostrarErrorDialog(context, errorMsg)
                     onResultado(null, errorMsg)
                 }
             }
@@ -70,10 +72,12 @@ fun obtenerMisDatos(
                         obtenerMisDatos(context,navController,accessToken, intentos + 1, onResultado)
                     }, 7000)
                 } else {
-                    val mensaje = (t.message ?: "Error desconocido") + " Intentos agotados."
+                    val mensaje = "No se pudo conectar con el servidor. Por favor, revisa tu conexión a internet e inténtalo de nuevo."
                     Log.e("MIUSUARIO", mensaje)
+                    mostrarErrorDialog(context, mensaje)
                     onResultado(null, mensaje)
                 }
             }
         })
 }
+

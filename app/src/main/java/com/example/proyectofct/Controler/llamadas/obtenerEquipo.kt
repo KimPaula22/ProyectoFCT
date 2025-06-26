@@ -1,5 +1,6 @@
 package com.example.proyectofct.Controler.llamadas
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -102,6 +103,7 @@ fun obtenerEquipo(
                     }
                 } else {
                     Log.e("Equipo", "Error en la respuesta: ${response.code()}")
+                    mostrarErrorDialog(context, "No se pudo obtener la información del equipo. Por favor, inténtalo de nuevo más tarde. (Código: ${response.code()})")
                     callback(null)
                 }
             }
@@ -115,10 +117,20 @@ fun obtenerEquipo(
                     }, 7000)
                 } else {
                     Toast.makeText(context, "No se pudo conectar con el servidor", Toast.LENGTH_LONG).show()
+                    mostrarErrorDialog(context, "No se pudo conectar con el servidor. Por favor, revisa tu conexión a internet e inténtalo de nuevo.")
                     callback(null)
                 }
             }
         })
+}
+
+fun mostrarErrorDialog(context: Context, mensaje: String) {
+    AlertDialog.Builder(context)
+        .setTitle("Error")
+        .setMessage(mensaje)
+        .setCancelable(false)
+        .setPositiveButton("Aceptar", null)
+        .show()
 }
 
 /*

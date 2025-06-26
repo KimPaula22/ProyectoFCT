@@ -70,6 +70,7 @@ fun obtenerEquipos(
                 }
             } else {
                 Log.e("Equipos", "Error en la respuesta: ${response.code()} ${response.message()}")
+                mostrarErrorDialog(context, "Error en la respuesta: ${response.code()} ${response.message()}")
                 callback(null)
             }
         }
@@ -82,6 +83,7 @@ fun obtenerEquipos(
                 obtenerEquipos(context, callback, navController, intento + 1)}, 7000)
             } else {
                 Log.e("Equipos", "Error de red o en la llamada: ${t.message}")
+                mostrarErrorDialog(context, "Error de red o en la llamada: ${t.message}")
                 Toast.makeText(context, "No se pudo conectar con el servidor", Toast.LENGTH_LONG).show()
                 callback(null)
             }

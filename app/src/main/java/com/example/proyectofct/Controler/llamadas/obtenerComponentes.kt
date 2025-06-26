@@ -1,5 +1,6 @@
 package com.example.proyectofct.Controler.llamadas
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -61,6 +62,7 @@ fun obtenerComponentes(
                 }
             } else {
                 Log.e("Componentes", "Error HTTP ${response.code()}: ${response.message()}")
+                mostrarErrorDialog(context, "No se pudieron obtener los componentes. Por favor, inténtalo de nuevo más tarde. (Código: ${response.code()})")
                 callback(null)
             }
         }
@@ -74,12 +76,12 @@ fun obtenerComponentes(
                 }, 7000)
             } else {
                 Log.e("Componentes", "Error de red o en la llamada: ${t.message}")
+                mostrarErrorDialog(context, "No se pudo conectar con el servidor. Por favor, revisa tu conexión a internet e inténtalo de nuevo.")
                 callback(null)
             }
         }
     })
 }
-
 
 // EJEMPLO DE USO obtenerComponentes Y traducirComponenetes
 /*
